@@ -1,34 +1,34 @@
-# Regole grammaticali — formato
+# Grammar rules — format
 
-Ogni file `*.yaml` qui dentro descrive UN fenomeno morfo-sintattico
-del latino. Il caricatore (`maggie-ingest load-grammar`) li importa
-in modo idempotente nella tabella `grammar_rules`.
+Each `*.yaml` file here describes ONE morpho-syntactic phenomenon of
+Latin. The loader (`maggie-ingest load-grammar`) imports them
+idempotently into the `grammar_rules` table.
 
 ## Schema
 
 ```yaml
-phenomenon: <slug snake_case, unique key insieme a `source`>
+phenomenon: <snake_case slug, unique together with `source`>
 rule_type: syntactic | morphological
-source: "Allen & Greenough §XYZ"      # opzionale
+source: "Allen & Greenough §XYZ"      # optional
 description: |
-  Spiegazione in italiano, abbastanza dettagliata da finire dentro
-  il prompt LLM senza altre risorse esterne. Markdown leggero ok.
+  Explanation in English, detailed enough to be dropped into the LLM
+  prompt without further external resources. Light Markdown is fine.
 pattern:
   type: ud_pattern
-  match_any:                            # OR fra le clausole
+  match_any:                            # OR across the clauses
     - { upos: VERB, Mood: Sub }
     - { upos: NOUN, Case: Abl }
 examples:
   - lat: "Caesare imperante, Galli rebellaverunt"
-    ita: "Comandando Cesare, i Galli si ribellarono"
-    note: "Imperante = participio presente in ablativo"
+    eng: "With Caesar in command, the Gauls rebelled"
+    note: "Imperante = present active participle in the ablative"
 ```
 
-## `pattern.type` supportati (v1)
+## Supported `pattern.type` (v1)
 
-- `ud_pattern`: matcha per-token su `upos` (Universal POS) e features UD.
-  Il match è OR fra le clausole di `match_any`. Per-clausola è AND
-  fra le condizioni del dict.
+- `ud_pattern`: matches per-token on `upos` (Universal POS) and UD
+  features. Match is OR across the `match_any` clauses. Within a
+  single clause it is AND across the dict conditions.
 
-Pattern più sofisticati (sequence, dep tree) verranno aggiunti
-quando un caso reale lo richiederà — niente astrazioni preventive.
+More sophisticated patterns (sequence, dependency tree) will be added
+when a real case requires them — no preemptive abstractions.

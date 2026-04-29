@@ -1,7 +1,7 @@
-"""Nodi del reasoning loop LangGraph.
+"""Nodes of the LangGraph reasoning loop.
 
-Ogni funzione `(state) -> partial_state` è isolatamente testabile.
-LangGraph farà il merge automatico nel `AgentState` complessivo.
+Each function `(state) -> partial_state` is testable in isolation.
+LangGraph performs the automatic merge into the overall `AgentState`.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ MAX_ITERATIONS = 2
 
 
 # -------------------------------------------------------------------
-# 1. morpho_parse — chiamata HTTP al servizio morphology
+# 1. morpho_parse — HTTP call to the morphology service
 # -------------------------------------------------------------------
 async def morpho_parse(state: AgentState) -> dict[str, Any]:
     settings = get_settings()
@@ -42,7 +42,7 @@ async def morpho_parse(state: AgentState) -> dict[str, Any]:
 
 
 # -------------------------------------------------------------------
-# 2. phenomena_detect — pure-Python su feature CLTK + pattern DB
+# 2. phenomena_detect — pure-Python over CLTK features + DB patterns
 # -------------------------------------------------------------------
 def phenomena_detect(state: AgentState) -> dict[str, Any]:
     rules = all_grammar_patterns()
@@ -54,8 +54,9 @@ def phenomena_detect(state: AgentState) -> dict[str, Any]:
 # 3. retrieve — Tool A (TM via pgvector) + Tool B (grammar lookup)
 # -------------------------------------------------------------------
 async def retrieve(state: AgentState) -> dict[str, Any]:
-    # Embedding del testo originale per la ricerca semantica
+    # Embed the source text for semantic search
     from maggieai.ingestion.embedder import embed
+
     [vec] = embed([state["input_text"]])
 
     tm_hits = tm_lookup(vec, k=5)
@@ -64,7 +65,7 @@ async def retrieve(state: AgentState) -> dict[str, Any]:
 
 
 # -------------------------------------------------------------------
-# 4. draft_translation — LLM (Claude) con tutte le evidence
+# 4. draft_translation — LLM (Claude) with all the evidence
 # -------------------------------------------------------------------
 async def draft_translation(state: AgentState, router: InferenceRouter) -> dict[str, Any]:
     user = prompts.render(
@@ -96,7 +97,7 @@ async def draft_translation(state: AgentState, router: InferenceRouter) -> dict[
 
 
 # -------------------------------------------------------------------
-# 5. self_critique — verifica del draft contro grammar evidence
+# 5. self_critique — verify the draft against grammar evidence
 # -------------------------------------------------------------------
 async def self_critique(state: AgentState, router: InferenceRouter) -> dict[str, Any]:
     user = prompts.render(
@@ -125,23 +126,27 @@ async def self_critique(state: AgentState, router: InferenceRouter) -> dict[str,
 
 
 # -------------------------------------------------------------------
-# 6. format_output — costruisce il JSON finale per il client
+# 6. format_output — build the final JSON for the client
 # -------------------------------------------------------------------
 def format_output(state: AgentState) -> dict[str, Any]:
     citations: list[dict[str, Any]] = []
     for hit in state.get("tm_hits", [])[:3]:
-        citations.append({
-            "type": "translation_memory",
-            "source": f"{hit['author'] or '?'} {hit['work'] or ''} {hit['locator'] or ''}".strip(),
-            "translator": hit["translator"],
-            "distance": hit["distance"],
-        })
+        citations.append(
+            {
+                "type": "translation_memory",
+                "source": f"{hit['author'] or '?'} {hit['work'] or ''} {hit['locator'] or ''}".strip(),
+                "translator": hit["translator"],
+                "distance": hit["distance"],
+            }
+        )
     for hit in state.get("grammar_hits", []):
-        citations.append({
-            "type": "grammar_rule",
-            "rule": hit["phenomenon"],
-            "source": hit["source"],
-        })
+        citations.append(
+            {
+                "type": "grammar_rule",
+                "rule": hit["phenomenon"],
+                "source": hit["source"],
+            }
+        )
 
     output = {
         "translation": state.get("draft_translation", ""),
@@ -159,12 +164,12 @@ def format_output(state: AgentState) -> dict[str, Any]:
 # Helpers
 # -------------------------------------------------------------------
 def _parse_json(text: str) -> dict[str, Any]:
-    """Tollerante: prova a estrarre JSON anche se il modello aggiunge prosa."""
+    """Tolerant: tries to extract JSON even if the model adds prose around it."""
     text = text.strip()
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        # Fallback: trova il primo { e l'ultimo }
+        # Fallback: locate the first { and the last }
         start = text.find("{")
         end = text.rfind("}")
         if start != -1 and end != -1 and end > start:
@@ -172,13 +177,13 @@ def _parse_json(text: str) -> dict[str, Any]:
                 return json.loads(text[start : end + 1])
             except json.JSONDecodeError:
                 pass
-        logger.warning("Impossibile parsare JSON dalla risposta LLM; uso testo grezzo")
+        logger.warning("Could not parse JSON from LLM response; using raw text")
         return {"translation": text, "rationale": "", "critique": text, "issues_found": False}
 
 
 def should_iterate(state: AgentState) -> str:
-    """Edge condizionale: se la critique trova problemi e siamo sotto il
-    limite di iterazioni, torna a draft_translation. Altrimenti format_output.
+    """Conditional edge: if the critique found issues and we are below the
+    iteration limit, loop back to draft_translation. Otherwise format_output.
     """
     if state.get("issues_found") and state.get("iterations", 0) < MAX_ITERATIONS:
         return "draft_translation"

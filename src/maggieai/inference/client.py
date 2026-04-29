@@ -1,8 +1,8 @@
-"""Interfaccia astratta `InferenceClient`.
+"""Abstract `InferenceClient` interface.
 
-Ogni implementazione (Claude, MLX locale, vLLM remoto, ...) espone lo
-stesso metodo `generate`. Il `Router` sceglie quale client invocare
-in base al tipo di task (vedi `router.py`).
+Each implementation (Claude, local MLX, remote vLLM, ...) exposes the
+same `generate` method. The `Router` chooses which client to invoke
+based on the task kind (see `router.py`).
 """
 
 from __future__ import annotations
@@ -14,12 +14,12 @@ from typing import Literal
 
 
 class TaskKind(str, Enum):
-    """Tipologia del task — usata dal router per scegliere il backend.
+    """Task kind — used by the router to pick the backend.
 
-    - ROUTING: classificazione veloce, output corto. Locale.
-    - LIGHTWEIGHT: helper / disambiguazione. Locale.
-    - TRANSLATION: traduzione critica con rationale. Claude (cloud).
-    - CRITIQUE: self-critique sul draft. Claude (cloud).
+    - ROUTING: fast classification, short output. Local.
+    - LIGHTWEIGHT: helper / disambiguation. Local.
+    - TRANSLATION: critical translation with rationale. Claude (cloud).
+    - CRITIQUE: self-critique on the draft. Claude (cloud).
     """
 
     ROUTING = "routing"
@@ -40,7 +40,7 @@ class GenerationRequest:
     max_tokens: int = 1024
     temperature: float = 0.2
     json_mode: bool = False
-    """Se True il client deve restituire un JSON valido (best-effort)."""
+    """If True the client must return valid JSON (best-effort)."""
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ class GenerationResponse:
 
 
 class InferenceClient(ABC):
-    """Contratto che ogni backend deve rispettare."""
+    """Contract every backend must satisfy."""
 
     @property
     @abstractmethod
@@ -62,5 +62,5 @@ class InferenceClient(ABC):
     async def generate(self, request: GenerationRequest) -> GenerationResponse: ...
 
     async def aclose(self) -> None:
-        """Chiusura risorse — override se il client tiene connessioni HTTP."""
+        """Resource cleanup — override if the client holds HTTP connections."""
         return None

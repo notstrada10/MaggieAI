@@ -1,18 +1,18 @@
 -- =================================================================
--- MaggieAI — schema iniziale (Sprint 1)
+-- MaggieAI — initial schema (Sprint 1)
 -- =================================================================
--- Idempotente: usa CREATE EXTENSION IF NOT EXISTS / CREATE TABLE IF
--- NOT EXISTS dove possibile. Eseguito automaticamente al primo
--- avvio del container Postgres tramite docker-entrypoint-initdb.d.
+-- Idempotent: uses CREATE EXTENSION IF NOT EXISTS / CREATE TABLE IF
+-- NOT EXISTS where possible. Applied automatically on the first start
+-- of the Postgres container via docker-entrypoint-initdb.d.
 
 CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS pg_trgm;     -- per ricerca BM25-like sui lemmi
+CREATE EXTENSION IF NOT EXISTS pg_trgm;     -- for BM25-like search on lemmas
 
 -- -----------------------------------------------------------------
 -- Tool A: Translation Memory
 -- -----------------------------------------------------------------
--- Coppie frase latina ↔ traduzione, con metadata bibliografici.
--- L'embedding è calcolato su `source_text` con bge-m3 (1024-dim).
+-- Latin sentence ↔ translation pairs, with bibliographic metadata.
+-- The embedding is computed on `source_text` with bge-m3 (1024-dim).
 -- -----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS translation_pairs (
     id          BIGSERIAL PRIMARY KEY,
@@ -39,9 +39,9 @@ CREATE INDEX IF NOT EXISTS translation_pairs_source_trgm_idx
 -- -----------------------------------------------------------------
 -- Tool B: Grammar Engine
 -- -----------------------------------------------------------------
--- Regole sintattiche/morfologiche caricate da YAML. `pattern` è un
--- matcher machine-readable usato dal nodo phenomena_detect; gli altri
--- campi sono prosa per il prompt LLM.
+-- Syntactic/morphological rules loaded from YAML. `pattern` is a
+-- machine-readable matcher used by the phenomena_detect node; the
+-- other fields are prose for the LLM prompt.
 -- -----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS grammar_rules (
     id          BIGSERIAL PRIMARY KEY,
@@ -59,10 +59,10 @@ CREATE INDEX IF NOT EXISTS grammar_rules_phenomenon_idx
     ON grammar_rules (phenomenon);
 
 -- -----------------------------------------------------------------
--- Cache morfologica
+-- Morphology cache
 -- -----------------------------------------------------------------
--- Risultati CLTK per lemmi già visti. Riempita on-demand dal nodo
--- morpho_parse, persiste fra restart.
+-- CLTK results for already-seen lemmas. Filled on demand by the
+-- morpho_parse node, persisted across restarts.
 -- -----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS lemma_cache (
     lemma      TEXT PRIMARY KEY,
@@ -74,11 +74,11 @@ CREATE TABLE IF NOT EXISTS lemma_cache (
 );
 
 -- -----------------------------------------------------------------
--- Audit log dei reasoning trace
+-- Reasoning trace audit log
 -- -----------------------------------------------------------------
--- Ogni invocazione dell'agente persiste l'intero State. Serve per
--- debugging, eval di regressione e (futuro) curazione dataset
--- per fine-tuning QLoRA.
+-- Each agent invocation persists the entire State. Used for
+-- debugging, regression eval, and (future) dataset curation for
+-- QLoRA fine-tuning.
 -- -----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS reasoning_traces (
     trace_id    UUID PRIMARY KEY,

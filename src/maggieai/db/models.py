@@ -1,8 +1,8 @@
-"""Modelli SQLAlchemy per le tabelle definite in `schema.sql`.
+"""SQLAlchemy models for the tables defined in `schema.sql`.
 
-Lo schema autoritativo è il file SQL — questi modelli sono un wrapper
-per query type-safe nel codice Python. Se aggiorni lo schema, allinea
-qui.
+The authoritative schema is the SQL file — these models are a wrapper
+for type-safe queries in Python code. If you update the schema, keep
+this file in sync.
 """
 
 from __future__ import annotations
@@ -52,7 +52,9 @@ class TranslationPair(Base):
 class GrammarRule(Base):
     __tablename__ = "grammar_rules"
     __table_args__ = (
-        CheckConstraint("rule_type IN ('syntactic', 'morphological')", name="grammar_rule_type_chk"),
+        CheckConstraint(
+            "rule_type IN ('syntactic', 'morphological')", name="grammar_rule_type_chk"
+        ),
         UniqueConstraint("phenomenon", "source", name="grammar_rules_phenom_source_uq"),
     )
 

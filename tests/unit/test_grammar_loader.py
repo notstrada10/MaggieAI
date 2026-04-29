@@ -1,4 +1,4 @@
-"""Unit test per validazione/normalizzazione di `grammar_loader` (no DB)."""
+"""Unit tests for `grammar_loader` validation/normalization (no DB)."""
 
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ def _ok_data() -> dict[str, object]:
     return {
         "phenomenon": "ablativo_assoluto",
         "rule_type": "syntactic",
-        "description": "  Una descrizione.\n",
+        "description": "  A description.\n",
         "pattern": {"type": "ud_pattern", "match_any": []},
         "source": "A&G §419",
-        "examples": [{"lat": "x", "ita": "y"}],
+        "examples": [{"lat": "x", "eng": "y"}],
     }
 
 
@@ -27,7 +27,7 @@ def test_validate_accepts_complete() -> None:
 def test_validate_rejects_missing_required() -> None:
     bad = _ok_data()
     del bad["pattern"]
-    with pytest.raises(ValueError, match="campi mancanti"):
+    with pytest.raises(ValueError, match="missing fields"):
         _validate(bad, Path("dummy.yaml"))
 
 
@@ -45,10 +45,10 @@ def test_validate_rejects_non_dict() -> None:
 
 def test_normalize_strips_description_and_defaults_examples() -> None:
     data = _ok_data()
-    data["description"] = "   testo con spazi   \n"
+    data["description"] = "   text with whitespace   \n"
     data.pop("examples")
     out = _normalize(data)
-    assert out["description"] == "testo con spazi"
+    assert out["description"] == "text with whitespace"
     assert out["examples"] == []
     assert out["source"] == "A&G §419"
 
@@ -59,12 +59,12 @@ def test_normalize_passes_pattern_through() -> None:
 
 
 def test_load_real_grammar_files_pass_validation() -> None:
-    """Smoke check: i 12 file YAML versionati nel repo passano la validazione."""
+    """Smoke check: the 12 YAML files versioned in the repo pass validation."""
     import yaml
 
     grammar_dir = Path(__file__).resolve().parents[2] / "data" / "grammar_rules"
     yaml_files = sorted(grammar_dir.glob("*.yaml"))
-    assert len(yaml_files) == 12, f"attesi 12 file, trovati {len(yaml_files)}"
+    assert len(yaml_files) == 12, f"expected 12 files, found {len(yaml_files)}"
     for path in yaml_files:
         with path.open(encoding="utf-8") as f:
             data = yaml.safe_load(f)

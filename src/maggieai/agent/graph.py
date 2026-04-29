@@ -1,6 +1,6 @@
-"""Costruzione dello StateGraph LangGraph.
+"""Construction of the LangGraph StateGraph.
 
-Forma del grafo:
+Graph shape:
 
     START
       └─> morpho_parse
@@ -26,7 +26,7 @@ from maggieai.inference.router import InferenceRouter
 
 
 def build_graph(router: InferenceRouter | None = None) -> Any:
-    """Costruisce e compila il grafo. Inietta `router` per testabilità."""
+    """Build and compile the graph. Inject `router` for testability."""
     router = router or InferenceRouter()
 
     g: StateGraph = StateGraph(AgentState)
@@ -51,4 +51,3 @@ def build_graph(router: InferenceRouter | None = None) -> Any:
     g.add_edge("format_output", END)
 
     return g.compile()
-

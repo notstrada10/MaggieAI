@@ -1,14 +1,14 @@
 # =============================================================================
 # MaggieAI — docker-compose
 # =============================================================================
-# NOTA IMPORTANTE: il servizio inference MLX NON è qui dentro. Gira NATIVO
-# su macOS (Metal non passa via Docker Desktop). Avvialo con `maggie-inference`
-# in un terminale separato. Vedi README §"Inference nativa".
+# IMPORTANT: the MLX inference service is NOT here. It runs NATIVELY on
+# macOS (Metal does not pass through Docker Desktop). Start it with
+# `maggie-inference` in a separate terminal. See README §"Native inference".
 #
-# Volumi persistenti:
-#   pg_data       : dati Postgres
-#   cltk_data     : modelli Stanza scaricati al primo run del morphology
-#   hf_cache      : cache HuggingFace (bge-m3 ~2GB) condivisa fra gateway/scraper
+# Persistent volumes:
+#   pg_data       : Postgres data
+#   cltk_data     : Stanza models downloaded on the morphology service's first run
+#   hf_cache      : HuggingFace cache (bge-m3 ~2GB), shared across gateway/scraper
 # =============================================================================
 
 services:
@@ -47,7 +47,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s   # primo start scarica i modelli
+      start_period: 60s   # first start downloads the models
 
   gateway:
     build:
@@ -71,11 +71,11 @@ services:
       morphology:
         condition: service_healthy
     extra_hosts:
-      # Permette al container di raggiungere il server MLX nativo dell'host
+      # Lets the container reach the native MLX server on the host
       - "host.docker.internal:host-gateway"
 
-  # Container per eseguire i comandi di ingestione (one-shot, profile separato).
-  # Uso: `docker compose --profile ingest run --rm ingest maggie-ingest load-grammar`
+  # One-shot container for ingestion commands (separate profile).
+  # Usage: `docker compose --profile ingest run --rm ingest maggie-ingest load-grammar`
   ingest:
     build:
       context: .

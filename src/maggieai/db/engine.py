@@ -1,4 +1,4 @@
-"""Engine SQLAlchemy condiviso e helper di sessione."""
+"""Shared SQLAlchemy engine and session helper."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def _session_factory() -> sessionmaker[Session]:
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
-    """Sessione con commit/rollback automatici."""
+    """Session with automatic commit/rollback."""
     session = _session_factory()()
     try:
         yield session

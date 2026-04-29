@@ -1,7 +1,11 @@
-"""Unit test per il caricamento template Jinja (`agent.prompts.render`).
+"""Unit tests for the Jinja template loader (`agent.prompts.render`).
 
-Verifica che tutti i template con StrictUndefined siano renderizzabili
-con il contesto minimo previsto dai nodi LangGraph.
+Verifies that every template using StrictUndefined renders with the
+minimal context provided by the LangGraph nodes.
+
+NOTE: Some assertions still reference Italian content of the prompts
+(e.g. "filologo", "Iterazione precedente"). Those will be flipped to
+English in Phase B when the .j2 files themselves are translated.
 """
 
 from __future__ import annotations

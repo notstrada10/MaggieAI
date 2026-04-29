@@ -1,7 +1,7 @@
 ###############################################################################
-# Morphology service — CLTK + Stanza per il latino.
-# Pesante: scarica modelli Stanza al primo avvio (~500 MB) in $CLTK_DATA.
-# Tieni un volume montato per evitare re-download.
+# Morphology service — CLTK + Stanza for Latin.
+# Heavy: downloads Stanza models on first start (~500 MB) into $CLTK_DATA.
+# Keep a mounted volume to avoid re-downloads.
 ###############################################################################
 
 FROM python:3.11-slim AS builder
@@ -13,7 +13,7 @@ ENV UV_LINK_MODE=copy \
 
 COPY --from=ghcr.io/astral-sh/uv:0.8.0 /uv /uvx /usr/local/bin/
 
-# CLTK / Stanza richiedono build-essential per alcune wheel
+# CLTK / Stanza require build-essential for some wheels
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
  && rm -rf /var/lib/apt/lists/*
@@ -41,7 +41,7 @@ COPY --from=builder /app/src /app/src
 WORKDIR /app
 ENV PYTHONPATH=/app/src
 
-# Volume per persistere i modelli Stanza/CLTK fra restart
+# Volume to persist the Stanza/CLTK models across restarts
 VOLUME ["/cltk_data"]
 
 EXPOSE 8002

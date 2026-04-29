@@ -1,12 +1,12 @@
-"""FastAPI gateway — entry point del sistema.
+"""FastAPI gateway — entry point of the system.
 
-Espone:
-- POST /translate   → reasoning loop completo (agent LangGraph)
-- POST /retrieve    → solo Tool A + Tool B, senza generazione (Sprint 2 deliverable)
+Exposes:
+- POST /translate   → full reasoning loop (LangGraph agent)
+- POST /retrieve    → only Tool A + Tool B, no generation (Sprint 2 deliverable)
 - GET  /health      → liveness check
 
-Il router di inference è creato una volta sola al lifespan-startup
-e chiuso a shutdown.
+The inference router is created once at lifespan-startup and closed
+at shutdown.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 # Pydantic — request/response
 # -------------------------------------------------------------------
 class TranslateRequest(BaseModel):
-    text: str = Field(min_length=1, description="Frase latina da tradurre")
+    text: str = Field(min_length=1, description="Latin sentence to translate")
 
 
 class TranslateResponse(BaseModel):
@@ -70,11 +70,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     mode: RoutingMode = "hybrid" if settings.anthropic_api_key else "local-only"
     if mode == "local-only":
-        logger.warning("ANTHROPIC_API_KEY non impostato — modalità local-only.")
+        logger.warning("ANTHROPIC_API_KEY not set — running in local-only mode.")
     router = InferenceRouter(mode=mode)
     app.state.router = router
     app.state.graph = build_graph(router=router)
-    logger.info("Gateway pronto (mode=%s)", mode)
+    logger.info("Gateway ready (mode=%s)", mode)
     try:
         yield
     finally:
@@ -99,12 +99,12 @@ async def translate(req: TranslateRequest) -> TranslateResponse:
     try:
         final_state = await app.state.graph.ainvoke(initial_state)
     except Exception as exc:  # pragma: no cover — log + 500
-        logger.exception("Errore nel reasoning loop (trace=%s)", trace_id)
+        logger.exception("Error in reasoning loop (trace=%s)", trace_id)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     output = final_state.get("output")
     if not output:
-        raise HTTPException(status_code=500, detail="Output finale mancante")
+        raise HTTPException(status_code=500, detail="Final output missing")
 
     _persist_trace(trace_id, req.text, final_state)
     return TranslateResponse(**output)
@@ -112,7 +112,7 @@ async def translate(req: TranslateRequest) -> TranslateResponse:
 
 @app.post("/retrieve", response_model=RetrieveResponse)
 def retrieve(req: RetrieveRequest) -> RetrieveResponse:
-    """Solo Tool A + Tool B (no LLM). Utile per debug e per la UI Streamlit."""
+    """Tool A + Tool B only (no LLM). Useful for debugging and the Streamlit UI."""
     from maggieai.ingestion.embedder import embed
 
     [vec] = embed([req.text])
@@ -126,10 +126,10 @@ def retrieve(req: RetrieveRequest) -> RetrieveResponse:
 # Helpers
 # -------------------------------------------------------------------
 def _persist_trace(trace_id: UUID, input_text: str, state: dict[str, Any]) -> None:
-    """Salva l'intero state in `reasoning_traces`. Best-effort: non
-    bloccare la response se la persistenza fallisce."""
+    """Save the full state to `reasoning_traces`. Best-effort: do not
+    block the response if persistence fails."""
     try:
-        # Pydantic models nel state non sono direttamente JSON-serializable
+        # Pydantic models inside the state are not directly JSON-serializable
         dump = json.loads(json.dumps(state, default=_json_default))
         with session_scope() as session:
             session.execute(
@@ -140,7 +140,7 @@ def _persist_trace(trace_id: UUID, input_text: str, state: dict[str, Any]) -> No
                 )
             )
     except Exception:
-        logger.exception("Fallita persistenza del trace %s (continuo)", trace_id)
+        logger.exception("Trace persistence failed for %s (continuing)", trace_id)
 
 
 def _json_default(obj: Any) -> Any:
@@ -148,7 +148,7 @@ def _json_default(obj: Any) -> Any:
         return obj.model_dump()
     if isinstance(obj, UUID):
         return str(obj)
-    raise TypeError(f"Non serializzabile: {type(obj).__name__}")
+    raise TypeError(f"Not serializable: {type(obj).__name__}")
 
 
 def run() -> None:

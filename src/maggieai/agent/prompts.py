@@ -1,9 +1,9 @@
-"""Caricamento template Jinja2 dai file in `prompts/`.
+"""Loading of Jinja2 templates from files in `prompts/`.
 
-Tenere i prompt fuori dal codice Python permette di:
-- versionarli/diff-arli leggibilmente
-- iterare sui prompt senza riavviare i servizi
-- caricare versioni multiple per A/B test futuri
+Keeping prompts outside Python lets us:
+- version/diff them readably
+- iterate on prompts without restarting services
+- load multiple versions for future A/B testing
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-# `prompts/` è alla root del repo, non dentro il package
+# `prompts/` lives at the repo root, not inside the package
 _PROMPTS_DIR = Path(__file__).resolve().parents[3] / "prompts"
 
 

@@ -1,7 +1,7 @@
-"""Configurazione centrale via Pydantic Settings.
+"""Central configuration via Pydantic Settings.
 
-Tutte le variabili d'ambiente del sistema sono dichiarate qui.
-Vedi `.env.example` per i valori di default e la documentazione.
+All environment variables of the system are declared here.
+See `.env.example` for default values and documentation.
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ class Settings(BaseSettings):
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 
-    # --- Servizi ---------------------------------------------------
+    # --- Services --------------------------------------------------
     morphology_url: str = "http://localhost:8002"
     inference_local_url: str = "http://host.docker.internal:8001"
     inference_local_model: str = "mlx-community/Qwen2.5-14B-Instruct-4bit"
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     inference_local_port: int = 8001
 
     # --- Anthropic / Claude ----------------------------------------
-    anthropic_api_key: str = Field(default="", description="Lascia vuoto per disabilitare Claude")
+    anthropic_api_key: str = Field(default="", description="Leave empty to disable Claude")
     claude_model: str = "claude-sonnet-4-6"
 
     # --- Embedding -------------------------------------------------
@@ -64,5 +64,5 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Singleton — la cache lru evita di rileggere `.env` a ogni chiamata."""
+    """Singleton — the lru cache avoids re-reading `.env` on every call."""
     return Settings()

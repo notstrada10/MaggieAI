@@ -1,8 +1,8 @@
-"""Microservizio FastAPI per l'analisi morfologica del latino.
+"""FastAPI microservice for Latin morphological analysis.
 
-Containerizzato — gira nel container `morphology` di docker-compose.
-Il gateway lo raggiunge via `MORPHOLOGY_URL` (default
-`http://morphology:8002` dentro la network Docker).
+Containerized — runs in the `morphology` service of docker-compose.
+The gateway reaches it via `MORPHOLOGY_URL` (default
+`http://morphology:8002` inside the Docker network).
 """
 
 from __future__ import annotations

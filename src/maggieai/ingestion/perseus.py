@@ -1,13 +1,13 @@
-"""Scraper per la Perseus Digital Library (Caesar — De Bello Gallico).
+"""Scraper for the Perseus Digital Library (Caesar — De Bello Gallico).
 
-Sorgente: il repo `PerseusDL/canonical-latinLit` su GitHub espone testi
-latini canonici in TEI XML (license CC BY-SA 3.0 USA). È più robusto
-dello scraping HTML del sito Perseus.
+Source: the `PerseusDL/canonical-latinLit` GitHub repo exposes
+canonical Latin texts in TEI XML (license CC BY-SA 3.0 USA). It is
+more robust than scraping the Perseus website HTML.
 
-Per la v1 scarichiamo solo il *De Bello Gallico* di Cesare:
+For v1 we only fetch Caesar's *De Bello Gallico*:
 https://raw.githubusercontent.com/PerseusDL/canonical-latinLit/master/data/phi0448/phi001/phi0448.phi001.perseus-lat2.xml
 
-Output: lista di `LatinSegment` con locator gerarchico (book.chapter.section).
+Output: list of `LatinSegment` with hierarchical locator (book.chapter.section).
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ class LatinSegment:
     text: str
     book: int
     chapter: int
-    section: int | None  # alcuni paragrafi non sono divisi in sezioni
+    section: int | None  # some paragraphs are not divided into sections
 
     @property
     def locator(self) -> str:
@@ -43,17 +43,17 @@ class LatinSegment:
 
 
 def fetch_dbg_xml(url: str = DBG_LATIN_URL, timeout: float = 30.0) -> bytes:
-    logger.info("Scarico TEI XML del De Bello Gallico da Perseus")
+    logger.info("Fetching De Bello Gallico TEI XML from Perseus")
     resp = requests.get(url, timeout=timeout)
     resp.raise_for_status()
     return resp.content
 
 
 def parse_dbg(xml_bytes: bytes, books: list[int] | None = None) -> list[LatinSegment]:
-    """Parsa il TEI XML e restituisce i segmenti latini, opzionalmente
-    filtrati per libri (es. `[1, 2]`).
+    """Parse the TEI XML and return Latin segments, optionally filtered by
+    book numbers (e.g. `[1, 2]`).
 
-    La struttura TEI di Perseus per il DBG è:
+    The Perseus TEI structure for the DBG is:
         <div type="edition">
           <div type="textpart" subtype="book" n="1">
             <div type="textpart" subtype="chapter" n="1">
@@ -90,21 +90,23 @@ def parse_dbg(xml_bytes: bytes, books: list[int] | None = None) -> list[LatinSeg
                     sec_n = _safe_int(sec_div.get("n"))
                     text = _collect_text(sec_div)
                     if text:
-                        segments.append(LatinSegment(text=text, book=book_n,
-                                                     chapter=chap_n, section=sec_n))
+                        segments.append(
+                            LatinSegment(text=text, book=book_n, chapter=chap_n, section=sec_n)
+                        )
             else:
-                # Capitolo senza sezioni — prendi il testo intero del capitolo
+                # Chapter without sections — take the whole chapter text
                 text = _collect_text(chap_div)
                 if text:
-                    segments.append(LatinSegment(text=text, book=book_n,
-                                                 chapter=chap_n, section=None))
+                    segments.append(
+                        LatinSegment(text=text, book=book_n, chapter=chap_n, section=None)
+                    )
 
-    logger.info("Parsing completato: %d segmenti latini estratti", len(segments))
+    logger.info("Parsing complete: %d Latin segments extracted", len(segments))
     return segments
 
 
 def _collect_text(elem: etree._Element) -> str:
-    """Concatena tutto il testo dei <p> figli, normalizza spazi."""
+    """Concatenate all child <p> text, normalize whitespace."""
     paragraphs = elem.xpath(".//tei:p", namespaces=TEI_NS)
     chunks: list[str] = []
     for p in paragraphs:

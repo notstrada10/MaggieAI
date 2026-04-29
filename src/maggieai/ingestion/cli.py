@@ -1,9 +1,9 @@
-"""CLI di ingestione (alias `maggie-ingest`).
+"""Ingestion CLI (alias `maggie-ingest`).
 
-Comandi:
-    maggie-ingest init-db                     # applica schema.sql
-    maggie-ingest load-grammar [PATH]         # carica regole YAML
-    maggie-ingest load-corpus dbg --books 1,2 # scarica e ingesta DBG
+Commands:
+    maggie-ingest init-db                     # apply schema.sql
+    maggie-ingest load-grammar [PATH]         # load YAML rules
+    maggie-ingest load-corpus dbg --books 1,2 # fetch and ingest DBG
 """
 
 from __future__ import annotations
@@ -29,25 +29,25 @@ def _setup_logging(verbose: bool) -> None:
 
 
 @click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Logging DEBUG")
+@click.option("-v", "--verbose", is_flag=True, help="DEBUG-level logging")
 def cli(verbose: bool) -> None:
-    """Ingestione dati per MaggieAI."""
+    """MaggieAI data ingestion."""
     _setup_logging(verbose)
 
 
 @cli.command("init-db")
 def init_db() -> None:
-    """Applica `schema.sql` al database configurato."""
-    from sqlalchemy import text
+    """Apply `schema.sql` to the configured database."""
+    from sqlalchemy import text  # noqa: F401  (kept for psycopg multi-statement script)
 
     from maggieai.db.engine import get_engine
 
     schema_path = Path(__file__).parents[1] / "db" / "schema.sql"
     sql = schema_path.read_text(encoding="utf-8")
     with get_engine().begin() as conn:
-        # psycopg accetta script multi-statement quando passati così
+        # psycopg accepts multi-statement scripts when passed this way
         conn.exec_driver_sql(sql)
-    console.print(f"[green]✓[/green] Schema applicato da {schema_path}")
+    console.print(f"[green]OK[/green] Schema applied from {schema_path}")
 
 
 @cli.command("load-grammar")
@@ -57,11 +57,11 @@ def init_db() -> None:
     default=Path("data/grammar_rules"),
 )
 def load_grammar(path: Path) -> None:
-    """Carica le regole YAML in `grammar_rules`."""
+    """Load the YAML rules into `grammar_rules`."""
     from maggieai.ingestion.grammar_loader import load_directory
 
     n = load_directory(path)
-    console.print(f"[green]✓[/green] Caricate {n} regole grammaticali")
+    console.print(f"[green]OK[/green] Loaded {n} grammar rules")
 
 
 @cli.command("load-corpus")
@@ -69,61 +69,67 @@ def load_grammar(path: Path) -> None:
 @click.option(
     "--books",
     default="1,2",
-    help="CSV di numeri di libro (es. '1,2,3')",
+    help="CSV of book numbers (e.g. '1,2,3')",
 )
 @click.option(
-    "--italian-jsonl",
+    "--translation-jsonl",
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
     default=None,
-    help="JSONL con la traduzione italiana (locator+text+translator). "
-    "Se omesso, ingesta solo testo latino senza coppie allineate.",
+    help="JSONL with the target translation (locator+text+translator). "
+    "If omitted, ingest only the Latin text without aligned pairs.",
 )
-def load_corpus(corpus: str, books: str, italian_jsonl: Path | None) -> None:
-    """Scarica un corpus, allinea con la traduzione e popola la TM."""
+def load_corpus(corpus: str, books: str, translation_jsonl: Path | None) -> None:
+    """Fetch a corpus, align with the translation, and populate the TM."""
     import json
 
     from sqlalchemy import insert
 
     from maggieai.db.engine import session_scope
     from maggieai.db.models import TranslationPair
-    from maggieai.ingestion.aligner import ItalianSegment, align_by_locator
+    from maggieai.ingestion.aligner import TranslationSegment, align_by_locator
     from maggieai.ingestion.embedder import embed
     from maggieai.ingestion.perseus import fetch_dbg_xml, parse_dbg
 
     if corpus != "dbg":
-        raise click.ClickException(f"Corpus sconosciuto: {corpus}")
+        raise click.ClickException(f"Unknown corpus: {corpus}")
 
     book_list = [int(b.strip()) for b in books.split(",") if b.strip()]
-    console.print(f"[bold]Ingestione DBG, libri {book_list}[/bold]")
+    console.print(f"[bold]Ingesting DBG, books {book_list}[/bold]")
 
     xml = fetch_dbg_xml()
     latin_segments = parse_dbg(xml, books=book_list)
-    console.print(f"  • {len(latin_segments)} segmenti latini estratti")
+    console.print(f"  - {len(latin_segments)} Latin segments extracted")
 
-    if italian_jsonl is None:
-        console.print("[yellow]⚠[/yellow] Nessun JSONL italiano fornito — "
-                      "salto allineamento e embedding TM. "
-                      "Per popolare le coppie passa --italian-jsonl PATH")
+    if translation_jsonl is None:
+        console.print(
+            "[yellow]![/yellow] No translation JSONL provided — "
+            "skipping alignment and TM embedding. "
+            "To populate the pairs pass --translation-jsonl PATH"
+        )
         return
 
-    italian_segments = [
-        ItalianSegment(
+    translation_segments = [
+        TranslationSegment(
             text=row["text"],
             locator=row["locator"],
-            translator=row.get("translator", "anonimo"),
+            translator=row.get("translator", "anonymous"),
             license=row.get("license", "PD"),
         )
-        for row in (json.loads(line) for line in italian_jsonl.read_text(encoding="utf-8").splitlines() if line.strip())
+        for row in (
+            json.loads(line)
+            for line in translation_jsonl.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        )
     ]
-    console.print(f"  • {len(italian_segments)} segmenti italiani caricati")
+    console.print(f"  - {len(translation_segments)} translation segments loaded")
 
-    pairs = align_by_locator(latin_segments, italian_segments)
-    console.print(f"  • {len(pairs)} coppie allineate")
+    pairs = align_by_locator(latin_segments, translation_segments)
+    console.print(f"  - {len(pairs)} aligned pairs")
 
     if not pairs:
         return
 
-    console.print("  • Calcolo embeddings (bge-m3)...")
+    console.print("  - Computing embeddings (bge-m3)...")
     vectors = embed([p.source_text for p in pairs])
 
     rows = [
@@ -141,7 +147,7 @@ def load_corpus(corpus: str, books: str, italian_jsonl: Path | None) -> None:
     ]
     with session_scope() as session:
         session.execute(insert(TranslationPair), rows)
-    console.print(f"[green]✓[/green] Inserite {len(rows)} coppie in translation_pairs")
+    console.print(f"[green]OK[/green] Inserted {len(rows)} pairs into translation_pairs")
 
 
 if __name__ == "__main__":

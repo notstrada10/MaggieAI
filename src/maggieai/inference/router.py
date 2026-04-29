@@ -1,11 +1,11 @@
-"""Router che sceglie l'`InferenceClient` giusto per ogni task.
+"""Router that picks the right `InferenceClient` for each task.
 
-Strategia di default — IBRIDO (locale + Claude):
-- ROUTING / LIGHTWEIGHT  → MlxLocalClient (Qwen-2.5-14B su MLX)
+Default strategy — HYBRID (local + Claude):
+- ROUTING / LIGHTWEIGHT  → MlxLocalClient (Qwen-2.5-14B on MLX)
 - TRANSLATION / CRITIQUE → ClaudeApiClient (claude-sonnet-4-6)
 
-Override possibile via env / costruttore se si vuole spostare tutto
-sul locale (mode='local-only') o tutto su Claude (mode='claude-only').
+Can be overridden via env / constructor to push everything to local
+(mode='local-only') or to Claude (mode='claude-only').
 """
 
 from __future__ import annotations

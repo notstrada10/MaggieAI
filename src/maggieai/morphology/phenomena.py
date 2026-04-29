@@ -1,10 +1,10 @@
-"""Rilevatore di costrutti sintattici notevoli.
+"""Detector for notable syntactic constructs.
 
-Riceve un `SentenceAnalysis` (output del pipeline CLTK) e applica i
-matcher dichiarativi caricati dalla tabella `grammar_rules` per
-restituire la lista dei `phenomenon` rilevati.
+Receives a `SentenceAnalysis` (output of the CLTK pipeline) and applies
+the declarative matchers loaded from the `grammar_rules` table to
+return the list of detected `phenomenon` slugs.
 
-I matcher sono JSONB con la forma:
+Matchers are JSONB of the shape:
     {
       "type": "ud_pattern",
       "match_any": [
@@ -13,9 +13,9 @@ I matcher sono JSONB con la forma:
       ]
     }
 
-Per la v1 supportiamo solo `ud_pattern` (match su POS+features).
-Pattern più complessi (sequence, dep tree) arriveranno con i casi che
-li richiedono — non astraggo prima del bisogno.
+For v1 we only support `ud_pattern` (match on POS+features). More
+complex patterns (sequence, dep tree) will arrive when a real case
+requires them — no preemptive abstraction.
 """
 
 from __future__ import annotations
@@ -26,10 +26,10 @@ from maggieai.morphology.pipeline import SentenceAnalysis, TokenAnalysis
 
 
 def detect(analysis: SentenceAnalysis, rules: list[dict[str, Any]]) -> list[str]:
-    """Restituisce i `phenomenon` rilevati dai pattern UD.
+    """Return the `phenomenon` slugs detected by the UD patterns.
 
-    `rules` è la lista di righe `grammar_rules` lette dal DB; ogni elemento
-    deve avere almeno `phenomenon` e `pattern`.
+    `rules` is the list of `grammar_rules` rows read from the DB; each
+    element must have at least `phenomenon` and `pattern`.
     """
     found: list[str] = []
     for rule in rules:
@@ -41,7 +41,7 @@ def detect(analysis: SentenceAnalysis, rules: list[dict[str, Any]]) -> list[str]
             if any(_token_matches(token, m) for m in match_any):
                 found.append(rule["phenomenon"])
                 break
-    # Deduplica preservando l'ordine
+    # Deduplicate while preserving order
     seen: set[str] = set()
     unique: list[str] = []
     for p in found:

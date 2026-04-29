@@ -1,15 +1,15 @@
-"""Caricatore idempotente delle regole grammaticali da YAML a Postgres.
+"""Idempotent loader for grammar rules from YAML to Postgres.
 
-Ogni file in `data/grammar_rules/*.yaml` rappresenta UN fenomeno
-sintattico/morfologico. Schema (vedi `data/grammar_rules/README.md`):
+Each file in `data/grammar_rules/*.yaml` describes ONE syntactic or
+morphological phenomenon. Schema (see `data/grammar_rules/README.md`):
 
     phenomenon: ablativo_assoluto
     rule_type: syntactic                # 'syntactic' | 'morphological'
     source: "Allen & Greenough §419"
     description: |
-      Costrutto participiale latino composto da un sostantivo e un
-      participio entrambi all'ablativo, sintatticamente indipendente
-      dalla proposizione principale...
+      Latin participial construction made up of a noun and a participle
+      both in the ablative, syntactically independent of the main
+      clause...
     pattern:
       type: ud_pattern
       match_any:
@@ -17,8 +17,8 @@ sintattico/morfologico. Schema (vedi `data/grammar_rules/README.md`):
         - { upos: "VERB", VerbForm: "Part", Case: "Abl" }
     examples:
       - lat: "Caesare imperante, Galli rebellaverunt"
-        ita: "Comandando Cesare, i Galli si ribellarono"
-        note: "Imperante = participio presente in ablativo"
+        eng: "With Caesar in command, the Gauls rebelled"
+        note: "Imperante = present active participle in the ablative"
 """
 
 from __future__ import annotations
@@ -39,14 +39,14 @@ REQUIRED_FIELDS = {"phenomenon", "rule_type", "description", "pattern"}
 
 
 def load_directory(directory: Path) -> int:
-    """Carica tutti gli `*.yaml` dalla directory in `grammar_rules`.
+    """Load every `*.yaml` from `directory` into `grammar_rules`.
 
-    Idempotente grazie a `ON CONFLICT (phenomenon, source) DO UPDATE` —
-    rieseguire aggiorna le regole esistenti.
+    Idempotent thanks to `ON CONFLICT (phenomenon, source) DO UPDATE` —
+    re-running updates the existing rules.
     """
     yaml_files = sorted(directory.glob("*.yaml")) + sorted(directory.glob("*.yml"))
     if not yaml_files:
-        logger.warning("Nessun file YAML trovato in %s", directory)
+        logger.warning("No YAML file found in %s", directory)
         return 0
 
     rules: list[dict[str, Any]] = []
@@ -69,18 +69,18 @@ def load_directory(directory: Path) -> int:
         )
         session.execute(stmt)
 
-    logger.info("Caricate %d regole grammaticali da %s", len(rules), directory)
+    logger.info("Loaded %d grammar rules from %s", len(rules), directory)
     return len(rules)
 
 
 def _validate(data: Any, path: Path) -> None:
     if not isinstance(data, dict):
-        raise ValueError(f"{path}: il file YAML deve contenere un mapping al top-level")
+        raise ValueError(f"{path}: the YAML file must contain a mapping at top level")
     missing = REQUIRED_FIELDS - data.keys()
     if missing:
-        raise ValueError(f"{path}: campi mancanti: {sorted(missing)}")
+        raise ValueError(f"{path}: missing fields: {sorted(missing)}")
     if data["rule_type"] not in {"syntactic", "morphological"}:
-        raise ValueError(f"{path}: rule_type deve essere 'syntactic' o 'morphological'")
+        raise ValueError(f"{path}: rule_type must be 'syntactic' or 'morphological'")
 
 
 def _normalize(data: dict[str, Any]) -> dict[str, Any]:

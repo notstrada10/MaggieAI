@@ -1,9 +1,9 @@
-"""Client per il server MLX locale (formato OpenAI-compatibile).
+"""Client for the local MLX server (OpenAI-compatible format).
 
-Il server vero e proprio gira NATIVAMENTE su macOS via `mlx_lm.server`
-(vedi `inference/server.py` e README §"Inference nativa"). Questo
-client lo raggiunge via HTTP — quindi può puntare anche a vLLM o
-llama.cpp con la stessa interfaccia, senza modifiche al codice.
+The actual server runs NATIVELY on macOS via `mlx_lm.server` (see
+`inference/server.py` and README §"Native inference"). This client
+reaches it over HTTP — so it can also point to vLLM or llama.cpp with
+the same interface, no code changes required.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ class MlxLocalClient(InferenceClient):
             "temperature": request.temperature,
         }
         if request.json_mode:
-            # mlx-lm.server supporta `response_format` come l'API OpenAI
+            # mlx-lm.server supports `response_format` like the OpenAI API
             payload["response_format"] = {"type": "json_object"}
 
         resp = await self._client.post(f"{self._base_url}/v1/chat/completions", json=payload)

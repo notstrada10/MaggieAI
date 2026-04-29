@@ -1,8 +1,8 @@
-"""Tool del reasoning loop: Translation Memory + Grammar Engine.
+"""Reasoning-loop tools: Translation Memory + Grammar Engine.
 
-Sono wrapper sottili sul DB Postgres. Usati dentro i nodi del grafo
-(non come `langchain.Tool` di prima generazione — non ci serve quel
-livello di astrazione perché siamo già dentro LangGraph).
+These are thin wrappers over Postgres. Used inside the graph nodes
+(not as first-generation `langchain.Tool` — we don't need that level
+of abstraction because we are already inside LangGraph).
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def tm_lookup(query_embedding: list[float], k: int = 5) -> list[TMHit]:
-    """Top-k semantica su `translation_pairs` via pgvector (cosine)."""
+    """Top-k semantic search on `translation_pairs` via pgvector (cosine)."""
     sql = text(
         """
         SELECT source_text, target_text, author, work, locator, translator,
@@ -47,13 +47,15 @@ def tm_lookup(query_embedding: list[float], k: int = 5) -> list[TMHit]:
 
 
 def grammar_lookup(phenomena: list[str]) -> list[GrammarHit]:
-    """Recupera le regole grammaticali per i `phenomenon` indicati."""
+    """Fetch the grammar rules for the given `phenomenon` slugs."""
     if not phenomena:
         return []
     with session_scope() as session:
-        rows = session.execute(
-            select(GrammarRule).where(GrammarRule.phenomenon.in_(phenomena))
-        ).scalars().all()
+        rows = (
+            session.execute(select(GrammarRule).where(GrammarRule.phenomenon.in_(phenomena)))
+            .scalars()
+            .all()
+        )
     return [
         GrammarHit(
             phenomenon=row.phenomenon,
@@ -66,9 +68,7 @@ def grammar_lookup(phenomena: list[str]) -> list[GrammarHit]:
 
 
 def all_grammar_patterns() -> list[dict[str, object]]:
-    """Restituisce tutti i pattern usati dal nodo `phenomena_detect`."""
+    """Return all the patterns used by the `phenomena_detect` node."""
     with session_scope() as session:
-        rows = session.execute(
-            select(GrammarRule.phenomenon, GrammarRule.pattern)
-        ).all()
+        rows = session.execute(select(GrammarRule.phenomenon, GrammarRule.pattern)).all()
     return [{"phenomenon": p, "pattern": pat} for p, pat in rows]

@@ -1,8 +1,8 @@
-"""Client Anthropic Claude per i nodi critici del reasoning loop.
+"""Anthropic Claude client for the critical reasoning-loop nodes.
 
-Usato per `draft_translation` e `self_critique` — task dove la qualità
-del ragionamento (e dell'italiano) supera nettamente quella di un
-modello locale 14B.
+Used for `draft_translation` and `self_critique` — tasks where the
+quality of reasoning (and of the target language) clearly outranks a
+local 14B model.
 """
 
 from __future__ import annotations
@@ -25,8 +25,8 @@ class ClaudeApiClient(InferenceClient):
         key = api_key or settings.anthropic_api_key
         if not key:
             raise ValueError(
-                "ANTHROPIC_API_KEY non configurato — impostalo in .env "
-                "oppure passa api_key esplicito al costruttore."
+                "ANTHROPIC_API_KEY not configured — set it in .env or pass an "
+                "explicit api_key to the constructor."
             )
         self._model = model or settings.claude_model
         self._client = AsyncAnthropic(api_key=key)
@@ -44,7 +44,7 @@ class ClaudeApiClient(InferenceClient):
             system=system_prompt or "",
             messages=conv,
         )
-        # Concatena tutti i blocchi text del response
+        # Concatenate all text blocks of the response
         text = "".join(block.text for block in response.content if block.type == "text")
         return GenerationResponse(
             text=text,
@@ -58,7 +58,7 @@ class ClaudeApiClient(InferenceClient):
 
 
 def _split_system(messages: list[Message]) -> tuple[str | None, list[MessageParam]]:
-    """Anthropic vuole il system prompt come parametro top-level, non in `messages`."""
+    """Anthropic expects the system prompt as a top-level parameter, not in `messages`."""
     system: str | None = None
     conv: list[MessageParam] = []
     for m in messages:

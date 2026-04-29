@@ -1,4 +1,4 @@
-"""Unit test per `morphology.phenomena.detect` (matcher UD)."""
+"""Unit tests for `morphology.phenomena.detect` (UD matcher)."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ def test_no_match_when_features_differ() -> None:
 
 
 def test_dedupes_repeated_phenomena() -> None:
-    """Due token che attivano lo stesso phenomenon → una sola voce."""
+    """Two tokens that trigger the same phenomenon → only one entry."""
     sent = _sent(
         _tok(0, "imperante", "VERB", VerbForm="Part", Case="Abl"),
         _tok(1, "expulso", "VERB", VerbForm="Part", Case="Abl"),

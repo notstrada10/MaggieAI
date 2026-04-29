@@ -41,15 +41,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Apple-Silicon-only inference. Installato solo sull'host che esegue mlx_local.py.
+# Apple-Silicon-only inference. Installed only on the host running mlx_local.py.
 inference-local = [
     "mlx-lm>=0.20",
 ]
-# Streamlit UI per l'ispezione dei trace (deliverable Sprint 4).
+# Streamlit UI for trace inspection (Sprint 4 deliverable).
 ui = [
     "streamlit>=1.40",
 ]
-# Harness di valutazione.
+# Evaluation harness.
 eval = [
     "sacrebleu>=2.4",
 ]

@@ -1,6 +1,6 @@
-"""Unit test per `ingestion.perseus.parse_dbg`.
+"""Unit tests for `ingestion.perseus.parse_dbg`.
 
-Usa un mini-TEI XML sintetico per non dipendere da rete.
+Uses a synthetic mini-TEI XML to avoid network dependency.
 """
 
 from __future__ import annotations
@@ -22,13 +22,13 @@ TEI = b"""<?xml version="1.0"?>
             </div>
           </div>
           <div type="textpart" subtype="chapter" n="2">
-            <p>capitolo senza sezioni</p>
+            <p>chapter without sections</p>
           </div>
         </div>
         <div type="textpart" subtype="book" n="2">
           <div type="textpart" subtype="chapter" n="1">
             <div type="textpart" subtype="section" n="1">
-              <p>secondo libro</p>
+              <p>second book</p>
             </div>
           </div>
         </div>
@@ -44,7 +44,7 @@ def test_parse_returns_segments_with_locator() -> None:
     locators = {s.locator for s in segs}
     assert "1.1.1" in locators
     assert "1.1.2" in locators
-    assert "1.2" in locators  # capitolo senza sezioni
+    assert "1.2" in locators  # chapter without sections
     assert "2.1.1" in locators
 
 
@@ -58,7 +58,7 @@ def test_parse_extracts_clean_text() -> None:
     segs = parse_dbg(TEI, books=[1])
     by_loc = {s.locator: s.text for s in segs}
     assert by_loc["1.1.1"] == "Gallia est omnis divisa in partes tres."
-    assert by_loc["1.2"] == "capitolo senza sezioni"
+    assert by_loc["1.2"] == "chapter without sections"
 
 
 def test_parse_chapter_without_sections_has_no_section() -> None:

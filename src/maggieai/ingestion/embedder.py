@@ -1,9 +1,9 @@
-"""Wrapper attorno a sentence-transformers per BAAI/bge-m3.
+"""Wrapper around sentence-transformers for BAAI/bge-m3.
 
-Singleton-per-processo: il modello è ~2 GB, lo carichiamo una volta sola.
-Per la v1 supportiamo solo l'encoding "dense" — i vettori `colbert` /
-`sparse` di bge-m3 sono ignorati per semplicità (potranno essere aggiunti
-in v2 se serve hybrid search).
+Per-process singleton: the model is ~2 GB, we load it only once.
+For v1 we only support the "dense" encoding — bge-m3's `colbert` /
+`sparse` vectors are ignored for simplicity (they could be added in
+v2 if hybrid search is needed).
 """
 
 from __future__ import annotations
@@ -25,12 +25,12 @@ def _get_model() -> "SentenceTransformer":
     from sentence_transformers import SentenceTransformer
 
     name = get_settings().embedding_model
-    logger.info("Caricamento modello embedding: %s", name)
+    logger.info("Loading embedding model: %s", name)
     return SentenceTransformer(name)
 
 
 def embed(texts: list[str], batch_size: int = 32) -> list[list[float]]:
-    """Calcola embedding 1024-dim per una lista di stringhe."""
+    """Compute 1024-dim embeddings for a list of strings."""
     model = _get_model()
     vectors = model.encode(
         texts,

@@ -1,7 +1,7 @@
-"""Harness di valutazione — Sprint 4 (skeleton).
+"""Evaluation harness — Sprint 4 (skeleton).
 
-Per ora implementa solo BLEU/chrF su un gold-set JSONL della forma:
-    {"input": "Gallia est ...", "translation": "La Gallia è ...", "phenomena": [...]}
+For now it only computes BLEU/chrF on a JSONL gold set of the form:
+    {"input": "Gallia est ...", "translation": "All Gaul is ...", "phenomena": [...]}
 """
 
 from __future__ import annotations
@@ -22,27 +22,29 @@ logger = logging.getLogger(__name__)
 
 @click.group()
 def cli() -> None:
-    """Eval CLI per MaggieAI."""
+    """MaggieAI eval CLI."""
 
 
 @cli.command("run")
 @click.option("--gold", type=click.Path(exists=True, dir_okay=False, path_type=Path), required=True)
 @click.option("--gateway-url", default="http://localhost:8000")
-@click.option("--limit", type=int, default=None, help="Tronca al primo N record")
+@click.option("--limit", type=int, default=None, help="Truncate to the first N records")
 def run(gold: Path, gateway_url: str, limit: int | None) -> None:
-    """Esegue il gold-set e stampa BLEU + chrF."""
+    """Run the gold set and print BLEU + chrF."""
     try:
         from sacrebleu import corpus_bleu, corpus_chrf
     except ImportError as exc:  # pragma: no cover
         raise click.ClickException(
-            "sacrebleu non installato. Installa con: uv pip install -e '.[eval]'"
+            "sacrebleu is not installed. Install with: uv pip install -e '.[eval]'"
         ) from exc
 
-    records = [json.loads(line) for line in gold.read_text(encoding="utf-8").splitlines() if line.strip()]
+    records = [
+        json.loads(line) for line in gold.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
     if limit:
         records = records[:limit]
 
-    console.print(f"[bold]Eval su {len(records)} esempi[/bold]")
+    console.print(f"[bold]Eval over {len(records)} examples[/bold]")
     hyp: list[str] = []
     ref: list[str] = []
 
@@ -57,7 +59,7 @@ def run(gold: Path, gateway_url: str, limit: int | None) -> None:
                 try:
                     out = await _run_one(client, rec["input"])
                 except Exception as exc:
-                    logger.warning("Errore su input '%s': %s", rec["input"][:50], exc)
+                    logger.warning("Error on input '%s': %s", rec["input"][:50], exc)
                     out = ""
                 hyp.append(out)
                 ref.append(rec["translation"])
@@ -68,9 +70,9 @@ def run(gold: Path, gateway_url: str, limit: int | None) -> None:
     bleu = corpus_bleu(hyp, [ref])
     chrf = corpus_chrf(hyp, [ref])
 
-    table = Table(title="Risultati eval")
-    table.add_column("Metrica")
-    table.add_column("Valore", justify="right")
+    table = Table(title="Eval results")
+    table.add_column("Metric")
+    table.add_column("Value", justify="right")
     table.add_row("BLEU", f"{bleu.score:.2f}")
     table.add_row("chrF", f"{chrf.score:.2f}")
     console.print(table)

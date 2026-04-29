@@ -1,4 +1,4 @@
-"""Unit test per gli helper puri di `agent.nodes`: `_parse_json`, `should_iterate`."""
+"""Unit tests for the pure helpers in `agent.nodes`: `_parse_json`, `should_iterate`."""
 
 from __future__ import annotations
 
@@ -6,26 +6,26 @@ from maggieai.agent.nodes import MAX_ITERATIONS, _parse_json, should_iterate
 
 
 def test_parse_json_clean() -> None:
-    out = _parse_json('{"translation": "ciao", "rationale": "x"}')
-    assert out == {"translation": "ciao", "rationale": "x"}
+    out = _parse_json('{"translation": "hello", "rationale": "x"}')
+    assert out == {"translation": "hello", "rationale": "x"}
 
 
 def test_parse_json_with_prose_around() -> None:
-    raw = 'Ecco il JSON:\n{"translation": "ok", "rationale": "y"}\n— fine.'
+    raw = 'Here is the JSON:\n{"translation": "ok", "rationale": "y"}\n— done.'
     out = _parse_json(raw)
     assert out["translation"] == "ok"
     assert out["rationale"] == "y"
 
 
 def test_parse_json_invalid_returns_fallback() -> None:
-    out = _parse_json("non è JSON e neanche con graffe")
-    # fallback: incapsula in un dict con il testo grezzo
+    out = _parse_json("not JSON, no braces either")
+    # fallback: wraps the raw text in a dict
     assert "translation" in out
     assert out["issues_found"] is False
 
 
 def test_parse_json_handles_inner_braces() -> None:
-    """Anche con prosa e graffe annidate, il primo `{` e l'ultimo `}` delimitano."""
+    """Even with prose around and nested braces, the first `{` and last `}` delimit."""
     raw = 'Output: {"a": {"b": 1}, "c": [1,2]}.'
     out = _parse_json(raw)
     assert out == {"a": {"b": 1}, "c": [1, 2]}

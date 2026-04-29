@@ -1,8 +1,8 @@
-"""State del reasoning loop LangGraph.
+"""State of the LangGraph reasoning loop.
 
-Una `TypedDict` perché LangGraph ne ha bisogno per il merge automatico
-fra nodi. Ogni nodo riceve uno State e ne restituisce un *delta*
-(Pydantic dataclass o dict parziale): LangGraph fa il merge.
+A `TypedDict` because LangGraph needs it for the automatic merge between
+nodes. Each node receives a State and returns a *delta* (Pydantic
+dataclass or partial dict): LangGraph performs the merge.
 """
 
 from __future__ import annotations
@@ -31,24 +31,24 @@ class GrammarHit(TypedDict):
 
 
 class AgentState(TypedDict, total=False):
-    """State condiviso fra tutti i nodi del reasoning loop."""
+    """State shared across all nodes of the reasoning loop."""
 
     # Input ------------------------------------------------------------
     trace_id: UUID
     input_text: str
 
-    # Output dei vari step --------------------------------------------
+    # Output of each step ---------------------------------------------
     morpho_analysis: SentenceAnalysis
     phenomena: list[str]
     tm_hits: list[TMHit]
     grammar_hits: list[GrammarHit]
 
-    # Generazione + critique ------------------------------------------
+    # Generation + critique -------------------------------------------
     draft_translation: str
     draft_rationale: str
     critique: str
     issues_found: bool
     iterations: int
 
-    # Output finale ---------------------------------------------------
+    # Final output ----------------------------------------------------
     output: dict[str, Any]
