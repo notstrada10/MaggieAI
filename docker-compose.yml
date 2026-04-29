@@ -1,0 +1,101 @@
+# =============================================================================
+# MaggieAI — docker-compose
+# =============================================================================
+# NOTA IMPORTANTE: il servizio inference MLX NON è qui dentro. Gira NATIVO
+# su macOS (Metal non passa via Docker Desktop). Avvialo con `maggie-inference`
+# in un terminale separato. Vedi README §"Inference nativa".
+#
+# Volumi persistenti:
+#   pg_data       : dati Postgres
+#   cltk_data     : modelli Stanza scaricati al primo run del morphology
+#   hf_cache      : cache HuggingFace (bge-m3 ~2GB) condivisa fra gateway/scraper
+# =============================================================================
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: maggieai-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-maggieai}
+      POSTGRES_USER: ${POSTGRES_USER:-maggieai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-maggieai_dev_only_change_me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./src/maggieai/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-maggieai}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  morphology:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.morphology
+    container_name: maggieai-morphology
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      CLTK_DATA: /cltk_data
+    ports:
+      - "8002:8002"
+    volumes:
+      - cltk_data:/cltk_data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s   # primo start scarica i modelli
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.gateway
+    container_name: maggieai-gateway
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_HOST: postgres
+      MORPHOLOGY_URL: http://morphology:8002
+      INFERENCE_LOCAL_URL: http://host.docker.internal:8001
+    ports:
+      - "8000:8000"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    depends_on:
+      postgres:
+        condition: service_healthy
+      morphology:
+        condition: service_healthy
+    extra_hosts:
+      # Permette al container di raggiungere il server MLX nativo dell'host
+      - "host.docker.internal:host-gateway"
+
+  # Container per eseguire i comandi di ingestione (one-shot, profile separato).
+  # Uso: `docker compose --profile ingest run --rm ingest maggie-ingest load-grammar`
+  ingest:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.gateway
+    profiles: ["ingest"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_HOST: postgres
+    volumes:
+      - ./data:/app/data:ro
+      - hf_cache:/root/.cache/huggingface
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: []
+    command: ["maggie-ingest", "--help"]
+
+volumes:
+  pg_data:
+  cltk_data:
+  hf_cache:

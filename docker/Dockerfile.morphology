@@ -1,0 +1,48 @@
+###############################################################################
+# Morphology service — CLTK + Stanza per il latino.
+# Pesante: scarica modelli Stanza al primo avvio (~500 MB) in $CLTK_DATA.
+# Tieni un volume montato per evitare re-download.
+###############################################################################
+
+FROM python:3.11-slim AS builder
+
+ENV UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1 \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    PYTHONDONTWRITEBYTECODE=1
+
+COPY --from=ghcr.io/astral-sh/uv:0.8.0 /uv /uvx /usr/local/bin/
+
+# CLTK / Stanza richiedono build-essential per alcune wheel
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY pyproject.toml ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-install-project --no-dev
+
+COPY src/ ./src/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev
+
+###############################################################################
+FROM python:3.11-slim AS runtime
+
+ENV PATH=/opt/venv/bin:$PATH \
+    PYTHONUNBUFFERED=1 \
+    CLTK_DATA=/cltk_data
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /app/src /app/src
+
+WORKDIR /app
+ENV PYTHONPATH=/app/src
+
+# Volume per persistere i modelli Stanza/CLTK fra restart
+VOLUME ["/cltk_data"]
+
+EXPOSE 8002
+CMD ["python", "-m", "maggieai.morphology.api"]

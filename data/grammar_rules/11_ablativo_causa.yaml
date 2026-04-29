@@ -1,0 +1,20 @@
+phenomenon: ablativo_di_causa
+rule_type: morphological
+source: "Allen & Greenough §404"
+description: |
+  Ablativo (semplice o preceduto da `prae`, `propter`, `ob`) che
+  indica la causa di un'azione o di uno stato. Tipico con verbi di
+  emozione (gaudere, dolere, laetari) e in espressioni come
+  "morire di X", "tremare per X".
+  In italiano: "per + nome", "a causa di + nome".
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: NOUN, Case: Abl }
+examples:
+  - lat: "Gaudeo victoria"
+    ita: "Gioisco per la vittoria"
+    note: "Victoria = abl. di causa con verbo di emozione"
+  - lat: "Prae timore fugit"
+    ita: "Per la paura fuggì"
+    note: "Prae + abl. = causa più esplicita"

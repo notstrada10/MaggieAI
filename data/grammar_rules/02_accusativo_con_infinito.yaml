@@ -1,0 +1,21 @@
+phenomenon: accusativo_con_infinito
+rule_type: syntactic
+source: "Allen & Greenough §580"
+description: |
+  Costruzione (AcI) usata in latino come oggetto di verbi di dire,
+  pensare, percepire, sentire (verba dicendi, sentiendi, voluntatis).
+  Il soggetto della subordinata va all'accusativo; il verbo
+  all'infinito (presente, perfetto o futuro). Si traduce in italiano
+  con una proposizione oggettiva esplicita ("che + indicativo/congiuntivo")
+  o implicita ("di + infinito") secondo il caso.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, VerbForm: Inf }
+examples:
+  - lat: "Dico Caesarem venire"
+    ita: "Dico che Cesare viene"
+    note: "Caesarem = soggetto in accusativo; venire = infinito presente"
+  - lat: "Audivi Romam captam esse"
+    ita: "Ho sentito che Roma è stata presa"
+    note: "Infinito perfetto passivo"

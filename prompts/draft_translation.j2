@@ -1,0 +1,67 @@
+# Frase latina da tradurre
+
+> {{ input_text }}
+
+# Analisi morfologica (CLTK)
+
+| # | Token | Lemma | POS | Features |
+|---|---|---|---|---|
+{% for tok in morpho.tokens -%}
+| {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} |
+{% endfor %}
+
+# Costrutti rilevati
+
+{% if phenomena -%}
+{% for p in phenomena %}- {{ p }}
+{% endfor %}
+{%- else -%}
+(nessun costrutto notevole rilevato dai pattern)
+{%- endif %}
+
+# Regole grammaticali pertinenti
+
+{% if grammar_hits -%}
+{% for r in grammar_hits %}
+## {{ r.phenomenon }}{% if r.source %} — {{ r.source }}{% endif %}
+
+{{ r.description }}
+
+{% if r.examples %}
+Esempi:
+{% for ex in r.examples %}- *{{ ex.lat }}* → "{{ ex.ita }}"{% if ex.note %} ({{ ex.note }}){% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{%- else -%}
+(nessuna regola rilevante)
+{%- endif %}
+
+# Translation Memory — precedenti d'autore (top-k semantico)
+
+{% if tm_hits -%}
+{% for hit in tm_hits %}
+## [{{ hit.author or '?' }} {{ hit.work or '' }} {{ hit.locator or '' }}] (distanza {{ "%.3f"|format(hit.distance) }})
+
+Latino: *{{ hit.source_text }}*
+Italiano ({{ hit.translator or 'anonimo' }}): "{{ hit.target_text }}"
+{% endfor %}
+{%- else -%}
+(nessun precedente trovato)
+{%- endif %}
+
+{% if previous_draft %}
+# Iterazione precedente — da migliorare
+
+Traduzione precedente:
+> {{ previous_draft }}
+
+Critica ricevuta:
+> {{ previous_critique }}
+
+Riscrivi tenendo conto della critica.
+{% endif %}
+
+---
+
+Produci ORA il JSON con `translation` e `rationale`.

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# uv: il lockfile va committato per reproducibility, non ignorarlo.
+# .python-version idem (gestito da uv, utile pinning).
+
+# Tooling
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Env / secrets
+.env
+.env.local
+
+# Data — kept out of git, populated by ingestion scripts
+data/raw/
+data/processed/
+data/models/
+
+# Eval reports
+eval/reports/
+
+# Inference model cache (mlx-lm pulls from HF)
+.cache/huggingface/
+
+# Local docker volumes
+docker/volumes/

@@ -1,0 +1,19 @@
+phenomenon: perifrastica_attiva
+rule_type: syntactic
+source: "Allen & Greenough §195"
+description: |
+  Costruzione formata dal participio futuro attivo (suffisso -urus, -ura,
+  -urum) + voce di `esse`. Esprime intenzione, imminenza o volontà di
+  compiere l'azione. In italiano: "stare per + infinito", "essere sul
+  punto di + infinito", "avere intenzione di + infinito".
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, VerbForm: Part, Tense: Fut, Voice: Act }
+examples:
+  - lat: "Caesar pugnaturus est"
+    ita: "Cesare sta per combattere / ha intenzione di combattere"
+    note: "Pugnaturus = part. futuro attivo + est"
+  - lat: "Morituri te salutant"
+    ita: "Coloro che stanno per morire ti salutano"
+    note: "Part. futuro attivo sostantivato"

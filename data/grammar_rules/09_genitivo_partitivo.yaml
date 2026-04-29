@@ -1,0 +1,21 @@
+phenomenon: genitivo_partitivo
+rule_type: morphological
+source: "Allen & Greenough §346"
+description: |
+  Genitivo che indica il tutto di cui si considera una parte. Compare
+  dopo: pronomi/aggettivi indefiniti (nemo, aliquis, multi, pauci...),
+  numerali, comparativi e superlativi, sostantivi di quantità o numero
+  (pars, numerus, copia, multitudo).
+  In italiano si traduce con "di + nome" oppure "fra + nome".
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: NOUN, Case: Gen }
+    - { upos: PRON, Case: Gen }
+examples:
+  - lat: "Fortissimi Gallorum sunt Belgae"
+    ita: "I più forti dei Galli sono i Belgi"
+    note: "Gallorum = genitivo partitivo dopo superlativo"
+  - lat: "Nemo nostrum"
+    ita: "Nessuno di noi"
+    note: "Nostrum = genitivo partitivo del pronome"

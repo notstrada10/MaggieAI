@@ -1,0 +1,21 @@
+phenomenon: ut_finale
+rule_type: syntactic
+source: "Allen & Greenough §531"
+description: |
+  Proposizione finale (di scopo) introdotta da `ut` (negativa: `ne`)
+  con il verbo al congiuntivo presente o imperfetto. Si traduce in
+  italiano con "per + infinito" o "affinché + congiuntivo".
+  Il tempo segue la consecutio: presente/perfetto in reggente → cong. presente;
+  imperfetto/piuccheperfetto in reggente → cong. imperfetto.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, Mood: Sub }
+    - { upos: AUX, Mood: Sub }
+examples:
+  - lat: "Veni ut te viderem"
+    ita: "Sono venuto per vederti / affinché ti vedessi"
+    note: "ut + cong. imperfetto = finale al passato"
+  - lat: "Pugnant ne servi fiant"
+    ita: "Combattono per non diventare schiavi"
+    note: "Finale negativa con `ne`"

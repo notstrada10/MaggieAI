@@ -1,0 +1,23 @@
+phenomenon: ablativo_assoluto
+rule_type: syntactic
+source: "Allen & Greenough §419"
+description: |
+  Costrutto participiale latino composto da un sostantivo (o pronome) e un
+  participio entrambi all'ablativo, sintatticamente indipendente dalla
+  proposizione principale. Esprime una circostanza (temporale, causale,
+  concessiva, ipotetica) del verbo reggente.
+  In italiano si traduce con: gerundio ("comandando Cesare"),
+  proposizione subordinata ("dopo che Cesare ebbe comandato"), oppure
+  costrutto assoluto italiano ("essendo Cesare al comando").
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, VerbForm: Part, Case: Abl }
+    - { upos: AUX, VerbForm: Part, Case: Abl }
+examples:
+  - lat: "Caesare imperante, Galli rebellaverunt"
+    ita: "Comandando Cesare, i Galli si ribellarono"
+    note: "Participio presente (imperante) in abl. concorda con Caesare in abl."
+  - lat: "Tarquinio expulso, Romani consules creaverunt"
+    ita: "Cacciato Tarquinio, i Romani elessero i consoli"
+    note: "Participio perfetto passivo (expulso)"
