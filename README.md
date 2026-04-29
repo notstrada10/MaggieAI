@@ -1,0 +1,2 @@
+# MaggieAI
+AI Latin Translator
