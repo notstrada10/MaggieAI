@@ -2,20 +2,21 @@ phenomenon: ut_consecutivo
 rule_type: syntactic
 source: "Allen & Greenough §537"
 description: |
-  Proposizione consecutiva (di conseguenza) introdotta da `ut`
-  (negativa: `ut non`), spesso anticipata da `tam`, `tantus`, `ita`,
-  `sic`, `adeo` nella reggente. Verbo al congiuntivo. Si traduce con
-  "così ... che + indicativo" o "tanto ... che + indicativo".
-  Distinzione da `ut_finale`: la consecutiva è preceduta da
-  intensificatori e conserva la sequenza dei tempi più libera.
+  Result clause (consequence) introduced by `ut` (negative: `ut non`),
+  often anticipated by `tam`, `tantus`, `ita`, `sic`, `adeo` in the main
+  clause. The verb is in the subjunctive.
+  In English: "so ... that + finite verb" or "such ... that + finite
+  verb".
+  Distinguished from `ut_finale`: result clauses are signalled by an
+  intensifier and follow a freer tense sequence.
 pattern:
   type: ud_pattern
   match_any:
     - { upos: VERB, Mood: Sub }
 examples:
   - lat: "Tantus erat clamor ut nihil audiri posset"
-    ita: "Il clamore era così grande che nulla si poteva udire"
-    note: "Tantus anticipa la consecutiva"
+    eng: "The shouting was so loud that nothing could be heard"
+    note: "Tantus anticipates the result clause"
   - lat: "Sic loquitur ut omnes admirentur"
-    ita: "Parla in modo tale che tutti lo ammirano"
-    note: "Sic come anticipatore"
+    eng: "He speaks in such a way that everyone admires him"
+    note: "Sic as an anticipator"

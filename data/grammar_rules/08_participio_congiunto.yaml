@@ -2,21 +2,22 @@ phenomenon: participio_congiunto
 rule_type: syntactic
 source: "Allen & Greenough §494"
 description: |
-  Participio (presente, perfetto o futuro) che concorda in caso, genere e
-  numero con un sostantivo o pronome della proposizione reggente.
-  Esprime una circostanza relativa al sostantivo a cui si riferisce.
-  Distinzione dall'ablativo assoluto: qui il participio NON è in
-  ablativo "assoluto" ma legato sintatticamente a un elemento della
-  reggente.
-  In italiano: relativa esplicita, gerundio, o subordinata circostanziale.
+  A participle (present, perfect, or future) that agrees in case, gender,
+  and number with a noun or pronoun in the main clause. It expresses a
+  circumstance bearing on the noun it modifies.
+  Distinguished from the ablative absolute: here the participle is NOT in
+  an "absolute" ablative but is syntactically tied to an element of the
+  main clause.
+  In English: a relative clause, a present participle, or a circumstantial
+  subordinate clause.
 pattern:
   type: ud_pattern
   match_any:
     - { upos: VERB, VerbForm: Part }
 examples:
   - lat: "Caesar Galliam ingressus hostes vicit"
-    ita: "Cesare, entrato in Gallia (= dopo essere entrato), sconfisse i nemici"
-    note: "Ingressus concorda con Caesar (Nom)"
+    eng: "Caesar, having entered Gaul (= after entering), defeated the enemy"
+    note: "Ingressus agrees with Caesar (Nom)"
   - lat: "Vidi puerum currentem"
-    ita: "Vidi il ragazzo che correva (mentre correva)"
-    note: "Currentem concorda con puerum (Acc)"
+    eng: "I saw the boy running (while he was running)"
+    note: "Currentem agrees with puerum (Acc)"

@@ -13,7 +13,7 @@ from sqlalchemy import select, text
 
 from maggieai.agent.state import GrammarHit, TMHit
 from maggieai.db.engine import session_scope
-from maggieai.db.models import GrammarRule, TranslationPair
+from maggieai.db.models import GrammarRule
 
 logger = logging.getLogger(__name__)
 

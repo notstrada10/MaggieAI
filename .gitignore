@@ -7,8 +7,8 @@ venv/
 build/
 dist/
 
-# uv: il lockfile va committato per reproducibility, non ignorarlo.
-# .python-version idem (gestito da uv, utile pinning).
+# uv: the lockfile must be committed for reproducibility, do not ignore it.
+# .python-version too (managed by uv, useful for pinning).
 
 # Tooling
 .mypy_cache/
@@ -40,3 +40,7 @@ eval/reports/
 
 # Local docker volumes
 docker/volumes/
+
+# Local-only docker compose overrides (e.g. host port remaps when other
+# stacks occupy the canonical ports). Compose auto-merges this file.
+docker-compose.override.yml

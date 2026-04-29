@@ -1,18 +1,18 @@
-# Frase originale
+# Original sentence
 
 > {{ input_text }}
 
-# Traduzione proposta
+# Proposed translation
 
 > {{ draft }}
 
-# Rationale del traduttore
+# Translator's rationale
 
 > {{ rationale }}
 
-# Evidence disponibili
+# Available evidence
 
-## Analisi morfologica
+## Morphological analysis
 
 | # | Token | Lemma | POS | Features |
 |---|---|---|---|---|
@@ -20,15 +20,15 @@
 | {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} |
 {% endfor %}
 
-## Regole grammaticali rilevate
+## Detected grammar rules
 
 {% if grammar_hits -%}
 {% for r in grammar_hits %}- **{{ r.phenomenon }}**: {{ r.description }}
 {% endfor %}
 {%- else -%}
-(nessuna)
+(none)
 {%- endif %}
 
 ---
 
-Verifica e produci il JSON di critica.
+Verify and produce the critique JSON.

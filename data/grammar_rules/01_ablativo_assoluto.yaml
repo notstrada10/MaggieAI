@@ -2,13 +2,14 @@ phenomenon: ablativo_assoluto
 rule_type: syntactic
 source: "Allen & Greenough §419"
 description: |
-  Costrutto participiale latino composto da un sostantivo (o pronome) e un
-  participio entrambi all'ablativo, sintatticamente indipendente dalla
-  proposizione principale. Esprime una circostanza (temporale, causale,
-  concessiva, ipotetica) del verbo reggente.
-  In italiano si traduce con: gerundio ("comandando Cesare"),
-  proposizione subordinata ("dopo che Cesare ebbe comandato"), oppure
-  costrutto assoluto italiano ("essendo Cesare al comando").
+  A participial construction in Latin made up of a noun (or pronoun) and a
+  participle, both in the ablative, syntactically independent of the main
+  clause. It expresses a circumstance (temporal, causal, concessive, or
+  conditional) of the governing verb.
+  In English it is rendered with: a subordinate clause ("After Caesar had
+  given the order"), a present participle ("Caesar commanding"), a
+  nominative absolute ("Caesar in command"), or a "with" phrase
+  ("with Caesar in command").
 pattern:
   type: ud_pattern
   match_any:
@@ -16,8 +17,8 @@ pattern:
     - { upos: AUX, VerbForm: Part, Case: Abl }
 examples:
   - lat: "Caesare imperante, Galli rebellaverunt"
-    ita: "Comandando Cesare, i Galli si ribellarono"
-    note: "Participio presente (imperante) in abl. concorda con Caesare in abl."
+    eng: "With Caesar in command, the Gauls rebelled"
+    note: "Present active participle (imperante) in the ablative agrees with Caesare in the ablative."
   - lat: "Tarquinio expulso, Romani consules creaverunt"
-    ita: "Cacciato Tarquinio, i Romani elessero i consoli"
-    note: "Participio perfetto passivo (expulso)"
+    eng: "After Tarquin had been expelled, the Romans elected consuls"
+    note: "Perfect passive participle (expulso)"

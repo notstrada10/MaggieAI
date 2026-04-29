@@ -2,19 +2,19 @@ phenomenon: ablativo_di_mezzo
 rule_type: morphological
 source: "Allen & Greenough §409"
 description: |
-  Ablativo strumentale (senza preposizione) che indica il mezzo, lo
-  strumento o il modo concreto con cui si compie un'azione.
-  Distinzione importante: l'agente animato vuole `a/ab + ablativo`
-  (ablativo d'agente), mentre il mezzo inanimato è ablativo semplice.
-  In italiano: "con + nome" o "per mezzo di + nome".
+  Instrumental ablative (without a preposition) expressing the means,
+  instrument, or concrete manner with which an action is carried out.
+  Important distinction: an animate agent takes `a/ab + ablative`
+  (ablative of agent), whereas an inanimate means is the bare ablative.
+  In English: "with + noun" or "by means of + noun".
 pattern:
   type: ud_pattern
   match_any:
     - { upos: NOUN, Case: Abl }
 examples:
   - lat: "Gladio pugnat"
-    ita: "Combatte con la spada"
-    note: "Gladio = abl. di mezzo (strumento)"
+    eng: "He fights with a sword"
+    note: "Gladio = instrumental ablative"
   - lat: "Manibus capere"
-    ita: "Prendere con le mani"
-    note: "Manibus = abl. plurale strumentale"
+    eng: "To take with one's hands"
+    note: "Manibus = plural instrumental ablative"

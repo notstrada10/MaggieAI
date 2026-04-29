@@ -46,13 +46,18 @@ CREATE INDEX IF NOT EXISTS translation_pairs_source_trgm_idx
 CREATE TABLE IF NOT EXISTS grammar_rules (
     id          BIGSERIAL PRIMARY KEY,
     phenomenon  TEXT          NOT NULL,
-    rule_type   TEXT          NOT NULL CHECK (rule_type IN ('syntactic', 'morphological')),
+    rule_type   TEXT          NOT NULL,
     pattern     JSONB         NOT NULL,
     description TEXT          NOT NULL,
     examples    JSONB         NOT NULL DEFAULT '[]'::jsonb,
     source      TEXT,
     created_at  TIMESTAMPTZ   NOT NULL DEFAULT now(),
-    UNIQUE (phenomenon, source)
+    -- Constraints must be named explicitly so SQLAlchemy ON CONFLICT clauses
+    -- can reference them by name (see grammar_loader.load_directory).
+    CONSTRAINT grammar_rule_type_chk
+        CHECK (rule_type IN ('syntactic', 'morphological')),
+    CONSTRAINT grammar_rules_phenom_source_uq
+        UNIQUE (phenomenon, source)
 );
 
 CREATE INDEX IF NOT EXISTS grammar_rules_phenomenon_idx

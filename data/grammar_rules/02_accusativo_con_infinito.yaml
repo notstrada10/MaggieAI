@@ -2,20 +2,21 @@ phenomenon: accusativo_con_infinito
 rule_type: syntactic
 source: "Allen & Greenough §580"
 description: |
-  Costruzione (AcI) usata in latino come oggetto di verbi di dire,
-  pensare, percepire, sentire (verba dicendi, sentiendi, voluntatis).
-  Il soggetto della subordinata va all'accusativo; il verbo
-  all'infinito (presente, perfetto o futuro). Si traduce in italiano
-  con una proposizione oggettiva esplicita ("che + indicativo/congiuntivo")
-  o implicita ("di + infinito") secondo il caso.
+  Construction (ACI) used in Latin as the object of verbs of saying,
+  thinking, perceiving, and feeling (verba dicendi, sentiendi, voluntatis).
+  The subject of the subordinate clause goes into the accusative; the
+  verb goes into the infinitive (present, perfect, or future).
+  In English it is rendered with a finite "that-clause" ("I say that
+  Caesar is coming") or, for some verbs of perception, with the
+  accusative-and-infinitive structure preserved ("I heard him come").
 pattern:
   type: ud_pattern
   match_any:
     - { upos: VERB, VerbForm: Inf }
 examples:
   - lat: "Dico Caesarem venire"
-    ita: "Dico che Cesare viene"
-    note: "Caesarem = soggetto in accusativo; venire = infinito presente"
+    eng: "I say that Caesar is coming"
+    note: "Caesarem = subject in the accusative; venire = present infinitive"
   - lat: "Audivi Romam captam esse"
-    ita: "Ho sentito che Roma è stata presa"
-    note: "Infinito perfetto passivo"
+    eng: "I heard that Rome had been captured"
+    note: "Perfect passive infinitive"

@@ -7,8 +7,13 @@ dataclass or partial dict): LangGraph performs the merge.
 
 from __future__ import annotations
 
-from typing import Any, TypedDict
+from typing import Any
 from uuid import UUID
+
+# typing_extensions.TypedDict (not typing.TypedDict) is required for Pydantic
+# v2 schema generation on Python < 3.12 — typing.TypedDict drops some runtime
+# metadata Pydantic needs.
+from typing_extensions import TypedDict
 
 from maggieai.morphology.pipeline import SentenceAnalysis
 

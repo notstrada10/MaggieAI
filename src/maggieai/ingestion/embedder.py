@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from maggieai.config import get_settings
 
@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=1)
-def _get_model() -> "SentenceTransformer":
+def _get_model() -> SentenceTransformer:
     from sentence_transformers import SentenceTransformer
 
     name = get_settings().embedding_model
     logger.info("Loading embedding model: %s", name)
-    return SentenceTransformer(name)
+    return cast("SentenceTransformer", SentenceTransformer(name))
 
 
 def embed(texts: list[str], batch_size: int = 32) -> list[list[float]]:
@@ -39,4 +39,4 @@ def embed(texts: list[str], batch_size: int = 32) -> list[list[float]]:
         show_progress_bar=len(texts) > 64,
         convert_to_numpy=True,
     )
-    return vectors.tolist()
+    return cast(list[list[float]], vectors.tolist())

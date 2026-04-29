@@ -29,7 +29,7 @@ def build_graph(router: InferenceRouter | None = None) -> Any:
     """Build and compile the graph. Inject `router` for testability."""
     router = router or InferenceRouter()
 
-    g: StateGraph = StateGraph(AgentState)
+    g: StateGraph[AgentState] = StateGraph(AgentState)
 
     g.add_node("morpho_parse", nodes.morpho_parse)
     g.add_node("phenomena_detect", nodes.phenomena_detect)

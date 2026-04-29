@@ -2,10 +2,6 @@
 
 Verifies that every template using StrictUndefined renders with the
 minimal context provided by the LangGraph nodes.
-
-NOTE: Some assertions still reference Italian content of the prompts
-(e.g. "filologo", "Iterazione precedente"). Those will be flipped to
-English in Phase B when the .j2 files themselves are translated.
 """
 
 from __future__ import annotations
@@ -37,7 +33,7 @@ def _morpho_minimal() -> dict[str, object]:
 
 def test_render_system_translator() -> None:
     out = render("system_translator.j2")
-    assert "filologo" in out.lower()
+    assert "philologist" in out.lower()
     assert "JSON" in out
 
 
@@ -55,20 +51,24 @@ def test_render_draft_translation_full_context() -> None:
         tm_hits=[
             {
                 "source_text": "Gallia est omnis",
-                "target_text": "La Gallia è tutta",
+                "target_text": "All Gaul is divided",
                 "author": "Caesar",
                 "work": "BG",
                 "locator": "1.1.1",
-                "translator": "Cocci",
+                "translator": "McDevitte",
                 "distance": 0.123,
             }
         ],
         grammar_hits=[
             {
                 "phenomenon": "ablativo_assoluto",
-                "description": "Costrutto participiale...",
+                "description": "Latin participial construction with a noun and a participle, both in the ablative...",
                 "examples": [
-                    {"lat": "Caesare imperante", "ita": "Comandando Cesare", "note": "n/a"}
+                    {
+                        "lat": "Caesare imperante",
+                        "eng": "With Caesar in command",
+                        "note": "n/a",
+                    }
                 ],
                 "source": "A&G §419",
             }
@@ -79,7 +79,7 @@ def test_render_draft_translation_full_context() -> None:
     assert "Gallia est" in out
     assert "ablativo_assoluto" in out
     assert "BG" in out
-    assert "Iterazione precedente" not in out
+    assert "Previous iteration" not in out
 
 
 def test_render_draft_translation_with_previous_iteration() -> None:
@@ -90,22 +90,22 @@ def test_render_draft_translation_with_previous_iteration() -> None:
         phenomena=[],
         tm_hits=[],
         grammar_hits=[],
-        previous_draft="bozza precedente",
-        previous_critique="manca AcI",
+        previous_draft="previous draft",
+        previous_critique="ACI missing",
     )
-    assert "Iterazione precedente" in out
-    assert "bozza precedente" in out
-    assert "manca AcI" in out
+    assert "Previous iteration" in out
+    assert "previous draft" in out
+    assert "ACI missing" in out
 
 
 def test_render_self_critique() -> None:
     out = render(
         "self_critique.j2",
         input_text="Gallia est",
-        draft="La Gallia è",
-        rationale="motivazione",
+        draft="All Gaul is",
+        rationale="reasoning",
         morpho=_morpho_minimal(),
         grammar_hits=[{"phenomenon": "x", "description": "y", "examples": [], "source": None}],
     )
-    assert "La Gallia è" in out
-    assert "motivazione" in out
+    assert "All Gaul is" in out
+    assert "reasoning" in out

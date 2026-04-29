@@ -130,21 +130,21 @@ async def self_critique(state: AgentState, router: InferenceRouter) -> dict[str,
 # -------------------------------------------------------------------
 def format_output(state: AgentState) -> dict[str, Any]:
     citations: list[dict[str, Any]] = []
-    for hit in state.get("tm_hits", [])[:3]:
+    for tm_hit in state.get("tm_hits", [])[:3]:
         citations.append(
             {
                 "type": "translation_memory",
-                "source": f"{hit['author'] or '?'} {hit['work'] or ''} {hit['locator'] or ''}".strip(),
-                "translator": hit["translator"],
-                "distance": hit["distance"],
+                "source": f"{tm_hit['author'] or '?'} {tm_hit['work'] or ''} {tm_hit['locator'] or ''}".strip(),
+                "translator": tm_hit["translator"],
+                "distance": tm_hit["distance"],
             }
         )
-    for hit in state.get("grammar_hits", []):
+    for g_hit in state.get("grammar_hits", []):
         citations.append(
             {
                 "type": "grammar_rule",
-                "rule": hit["phenomenon"],
-                "source": hit["source"],
+                "rule": g_hit["phenomenon"],
+                "source": g_hit["source"],
             }
         )
 
@@ -166,19 +166,29 @@ def format_output(state: AgentState) -> dict[str, Any]:
 def _parse_json(text: str) -> dict[str, Any]:
     """Tolerant: tries to extract JSON even if the model adds prose around it."""
     text = text.strip()
+    parsed = _try_load(text)
+    if parsed is not None:
+        return parsed
+    # Fallback: locate the first { and the last }
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        parsed = _try_load(text[start : end + 1])
+        if parsed is not None:
+            return parsed
+    logger.warning("Could not parse JSON from LLM response; using raw text")
+    return {"translation": text, "rationale": "", "critique": text, "issues_found": False}
+
+
+def _try_load(text: str) -> dict[str, Any] | None:
+    """Best-effort JSON load that returns None on failure or non-dict result."""
     try:
-        return json.loads(text)
+        result = json.loads(text)
     except json.JSONDecodeError:
-        # Fallback: locate the first { and the last }
-        start = text.find("{")
-        end = text.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            try:
-                return json.loads(text[start : end + 1])
-            except json.JSONDecodeError:
-                pass
-        logger.warning("Could not parse JSON from LLM response; using raw text")
-        return {"translation": text, "rationale": "", "critique": text, "issues_found": False}
+        return None
+    if not isinstance(result, dict):
+        return None
+    return result
 
 
 def should_iterate(state: AgentState) -> str:

@@ -2,10 +2,11 @@ phenomenon: perifrastica_passiva
 rule_type: syntactic
 source: "Allen & Greenough §500"
 description: |
-  Costruzione formata dal gerundivo (participio futuro passivo, suffisso
-  -ndus, -nda, -ndum) + voce di `esse`. Esprime necessità o dovere.
-  Il complemento d'agente va in dativo (dativus auctoris).
-  In italiano: "deve essere + participio passato" o "bisogna + infinito".
+  Construction made up of the gerundive (future passive participle,
+  suffix -ndus, -nda, -ndum) + a form of `esse`. It expresses necessity
+  or obligation. The agent goes into the dative (dativus auctoris).
+  In English: "must be + past participle", "is to be + past participle",
+  or "needs to be + past participle".
 pattern:
   type: ud_pattern
   match_any:
@@ -13,8 +14,8 @@ pattern:
     - { upos: ADJ, VerbForm: Gdv }
 examples:
   - lat: "Carthago delenda est"
-    ita: "Cartagine deve essere distrutta"
-    note: "Gerundivo (delenda) + est"
+    eng: "Carthage must be destroyed"
+    note: "Gerundive (delenda) + est"
   - lat: "Mihi liber legendus est"
-    ita: "Il libro deve essere letto da me / Devo leggere il libro"
-    note: "Mihi = dativo d'agente"
+    eng: "The book must be read by me / I have to read the book"
+    note: "Mihi = dative of agent"

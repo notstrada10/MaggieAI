@@ -2,13 +2,13 @@ phenomenon: cum_narrativo
 rule_type: syntactic
 source: "Allen & Greenough §546"
 description: |
-  Costruzione tipica del racconto storico: `cum` + congiuntivo
-  imperfetto (azione contemporanea) o piuccheperfetto (azione anteriore).
-  Esprime la circostanza (temporale, causale o concessiva) in cui si
-  svolge l'azione principale. In italiano si traduce con
-  "mentre / poiché / sebbene + indicativo o congiuntivo" a seconda
-  della sfumatura.
-  Distinzione da `cum` temporale-iterativo (cum + indicativo).
+  Construction characteristic of historical narrative: `cum` + imperfect
+  subjunctive (contemporaneous action) or pluperfect subjunctive (anterior
+  action). It expresses the circumstance (temporal, causal, or concessive)
+  in which the main action takes place.
+  In English: "when / since / although + finite verb", depending on the
+  nuance.
+  Distinguished from temporal-iterative `cum` (`cum` + indicative).
 pattern:
   type: ud_pattern
   match_any:
@@ -16,8 +16,8 @@ pattern:
     - { upos: VERB, Mood: Sub, Tense: Pqp }
 examples:
   - lat: "Caesar cum in Galliam venisset, hostes vicit"
-    ita: "Essendo giunto in Gallia (poiché era giunto in Gallia), Cesare sconfisse i nemici"
-    note: "Cum + cong. piuccheperfetto = anteriorità"
+    eng: "When Caesar had reached Gaul (since he had reached Gaul), he defeated the enemy"
+    note: "Cum + pluperfect subjunctive = anteriority"
   - lat: "Cum legeret, intravit amicus"
-    ita: "Mentre leggeva, entrò l'amico"
-    note: "Cum + cong. imperfetto = contemporaneità"
+    eng: "While he was reading, his friend came in"
+    note: "Cum + imperfect subjunctive = contemporaneity"

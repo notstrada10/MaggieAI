@@ -2,11 +2,13 @@ phenomenon: ut_finale
 rule_type: syntactic
 source: "Allen & Greenough §531"
 description: |
-  Proposizione finale (di scopo) introdotta da `ut` (negativa: `ne`)
-  con il verbo al congiuntivo presente o imperfetto. Si traduce in
-  italiano con "per + infinito" o "affinché + congiuntivo".
-  Il tempo segue la consecutio: presente/perfetto in reggente → cong. presente;
-  imperfetto/piuccheperfetto in reggente → cong. imperfetto.
+  Final (purpose) clause introduced by `ut` (negative: `ne`) with the
+  verb in the present or imperfect subjunctive.
+  In English: "(in order) to + infinitive" or "so that + finite verb
+  (may/might)".
+  The tense follows the sequence-of-tenses rule: a primary tense in the
+  main clause → present subjunctive; a secondary tense in the main clause
+  → imperfect subjunctive.
 pattern:
   type: ud_pattern
   match_any:
@@ -14,8 +16,8 @@ pattern:
     - { upos: AUX, Mood: Sub }
 examples:
   - lat: "Veni ut te viderem"
-    ita: "Sono venuto per vederti / affinché ti vedessi"
-    note: "ut + cong. imperfetto = finale al passato"
+    eng: "I came (in order) to see you / so that I might see you"
+    note: "ut + imperfect subjunctive = past purpose"
   - lat: "Pugnant ne servi fiant"
-    ita: "Combattono per non diventare schiavi"
-    note: "Finale negativa con `ne`"
+    eng: "They fight so that they may not become slaves"
+    note: "Negative purpose with `ne`"

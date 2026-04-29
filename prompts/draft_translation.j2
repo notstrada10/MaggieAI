@@ -1,8 +1,8 @@
-# Frase latina da tradurre
+# Latin sentence to translate
 
 > {{ input_text }}
 
-# Analisi morfologica (CLTK)
+# Morphological analysis (CLTK)
 
 | # | Token | Lemma | POS | Features |
 |---|---|---|---|---|
@@ -10,16 +10,16 @@
 | {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} |
 {% endfor %}
 
-# Costrutti rilevati
+# Detected constructs
 
 {% if phenomena -%}
 {% for p in phenomena %}- {{ p }}
 {% endfor %}
 {%- else -%}
-(nessun costrutto notevole rilevato dai pattern)
+(no notable construct detected by the patterns)
 {%- endif %}
 
-# Regole grammaticali pertinenti
+# Relevant grammar rules
 
 {% if grammar_hits -%}
 {% for r in grammar_hits %}
@@ -28,40 +28,40 @@
 {{ r.description }}
 
 {% if r.examples %}
-Esempi:
-{% for ex in r.examples %}- *{{ ex.lat }}* → "{{ ex.ita }}"{% if ex.note %} ({{ ex.note }}){% endif %}
+Examples:
+{% for ex in r.examples %}- *{{ ex.lat }}* → "{{ ex.eng }}"{% if ex.note %} ({{ ex.note }}){% endif %}
 {% endfor %}
 {% endif %}
 {% endfor %}
 {%- else -%}
-(nessuna regola rilevante)
+(no relevant rule)
 {%- endif %}
 
-# Translation Memory — precedenti d'autore (top-k semantico)
+# Translation Memory — authorial precedents (semantic top-k)
 
 {% if tm_hits -%}
 {% for hit in tm_hits %}
-## [{{ hit.author or '?' }} {{ hit.work or '' }} {{ hit.locator or '' }}] (distanza {{ "%.3f"|format(hit.distance) }})
+## [{{ hit.author or '?' }} {{ hit.work or '' }} {{ hit.locator or '' }}] (distance {{ "%.3f"|format(hit.distance) }})
 
-Latino: *{{ hit.source_text }}*
-Italiano ({{ hit.translator or 'anonimo' }}): "{{ hit.target_text }}"
+Latin: *{{ hit.source_text }}*
+Translation ({{ hit.translator or 'anonymous' }}): "{{ hit.target_text }}"
 {% endfor %}
 {%- else -%}
-(nessun precedente trovato)
+(no precedent found)
 {%- endif %}
 
 {% if previous_draft %}
-# Iterazione precedente — da migliorare
+# Previous iteration — needs improvement
 
-Traduzione precedente:
+Previous translation:
 > {{ previous_draft }}
 
-Critica ricevuta:
+Critique received:
 > {{ previous_critique }}
 
-Riscrivi tenendo conto della critica.
+Rewrite taking the critique into account.
 {% endif %}
 
 ---
 
-Produci ORA il JSON con `translation` e `rationale`.
+Now produce the JSON with `translation` and `rationale`.

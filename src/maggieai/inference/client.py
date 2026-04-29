@@ -9,11 +9,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 
-class TaskKind(str, Enum):
+class TaskKind(StrEnum):
     """Task kind — used by the router to pick the backend.
 
     - ROUTING: fast classification, short output. Local.

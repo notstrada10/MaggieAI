@@ -2,12 +2,13 @@ phenomenon: dativo_possesso
 rule_type: morphological
 source: "Allen & Greenough §373"
 description: |
-  Costruzione `est + dativo + nominativo` per esprimere il possesso.
-  Il possessore va in dativo, la cosa posseduta in nominativo come
-  soggetto di `esse`. In italiano si traduce inversamente con
-  "avere": "Mihi est liber" → "Io ho un libro".
-  Sfumatura rispetto a `habeo + accusativo`: enfatizza l'esistenza
-  della cosa più che l'atto di possesso.
+  Construction `est + dative + nominative` to express possession. The
+  possessor goes into the dative; the thing possessed goes into the
+  nominative as the subject of `esse`.
+  In English the relationship inverts to "have": "Mihi est liber" → "I
+  have a book".
+  Nuance versus `habeo + accusative`: emphasises the existence of the
+  thing more than the act of possessing it.
 pattern:
   type: ud_pattern
   match_any:
@@ -15,8 +16,8 @@ pattern:
     - { upos: NOUN, Case: Dat }
 examples:
   - lat: "Mihi est liber"
-    ita: "Io ho un libro (lett. a me è un libro)"
-    note: "Mihi = dat. di possesso, liber = sogg. nom."
+    eng: "I have a book (lit. there is a book to me)"
+    note: "Mihi = dative of possession, liber = nominative subject"
   - lat: "Caesari magna auctoritas erat"
-    ita: "Cesare aveva grande autorità"
-    note: "Caesari = dat. di possesso"
+    eng: "Caesar had great authority"
+    note: "Caesari = dative of possession"
