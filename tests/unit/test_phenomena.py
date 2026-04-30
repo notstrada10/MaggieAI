@@ -123,3 +123,75 @@ def test_cum_narrativo_does_not_match_imperfect_indicative() -> None:
         _tok(0, "legebat", "VERB", Mood="Ind", Aspect="Imp", Tense="Past", VerbForm="Fin"),
     )
     assert detect(sent, [CUM_NARRATIVO]) == []
+
+
+# Regression guards for the gerundive (perifrastica_passiva). The CLTK
+# Stanza ittb model encodes the gerundive as VerbForm=Part+Aspect=prospective
+# rather than the canonical UD VerbForm=Gdv — see comment in
+# data/grammar_rules/06_perifrastica_passiva.yaml.
+PERIFRASTICA_PASSIVA = {
+    "phenomenon": "perifrastica_passiva",
+    "pattern": {
+        "type": "ud_pattern",
+        "match_any": [
+            {"upos": "VERB", "VerbForm": "Gdv"},
+            {"upos": "ADJ", "VerbForm": "Gdv"},
+            {"upos": "VERB", "VerbForm": "Part", "Aspect": "prospective"},
+        ],
+    },
+}
+
+
+def test_perifrastica_passiva_matches_cltk_prospective_aspect() -> None:
+    """`delenda` (gerundive) as CLTK Stanza ittb tags it."""
+    sent = _sent(
+        _tok(0, "delenda", "VERB", VerbForm="Part", Aspect="prospective", Voice="Pass"),
+    )
+    assert detect(sent, [PERIFRASTICA_PASSIVA]) == ["perifrastica_passiva"]
+
+
+def test_perifrastica_passiva_matches_canonical_ud_gdv() -> None:
+    """Forward compat with treebanks that follow canonical UD-Latin."""
+    sent = _sent(_tok(0, "delenda", "VERB", VerbForm="Gdv"))
+    assert detect(sent, [PERIFRASTICA_PASSIVA]) == ["perifrastica_passiva"]
+
+
+def test_perifrastica_passiva_does_not_match_perfect_passive_participle() -> None:
+    """Control: regular PPP (`expulso`) has Aspect=Perf, NOT prospective."""
+    sent = _sent(
+        _tok(0, "expulso", "VERB", VerbForm="Part", Aspect="Perf", Voice="Pass"),
+    )
+    assert detect(sent, [PERIFRASTICA_PASSIVA]) == []
+
+
+# Regression guards for perifrastica_attiva. CLTK Stanza ittb tagging is
+# inconsistent on future active participles — see YAML for full notes.
+PERIFRASTICA_ATTIVA = {
+    "phenomenon": "perifrastica_attiva",
+    "pattern": {
+        "type": "ud_pattern",
+        "match_any": [
+            {"upos": "VERB", "VerbForm": "Part", "Aspect": "Perf", "Voice": "Act"},
+        ],
+    },
+}
+
+
+def test_perifrastica_attiva_matches_correctly_tagged_morituri() -> None:
+    """`Morituri` came back from CLTK as Aspect=Perf, Voice=Act — pattern catches it."""
+    sent = _sent(
+        _tok(0, "Morituri", "VERB", VerbForm="Part", Aspect="Perf", Voice="Act"),
+    )
+    assert detect(sent, [PERIFRASTICA_ATTIVA]) == ["perifrastica_attiva"]
+
+
+def test_perifrastica_attiva_misses_mistagged_pugnaturus() -> None:
+    """Document the known model wart: `pugnaturus` is mistagged as Voice=Pass.
+
+    The pattern can't catch it without over-matching all PPPs. The LLM
+    falls back to the morpho table to identify it.
+    """
+    sent = _sent(
+        _tok(0, "pugnaturus", "VERB", VerbForm="Part", Aspect="Perf", Voice="Pass"),
+    )
+    assert detect(sent, [PERIFRASTICA_ATTIVA]) == []

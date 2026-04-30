@@ -9,9 +9,18 @@ description: |
   or "needs to be + past participle".
 pattern:
   type: ud_pattern
+  # Canonical UD-Latin tags the gerundive as VerbForm=Gdv, but the
+  # CLTK Stanza ittb model encodes it instead as
+  # VerbForm=Part + Aspect=prospective + Voice=Pass. Verified empirically
+  # against `delenda` and `legendus`. We accept both encodings: the
+  # canonical form (for forward compatibility with other Latin treebanks)
+  # and the actual CLTK form. The "prospective" aspect value is
+  # CLTK-specific — it has no entry in the UD value normalizer, so it
+  # passes through verbatim.
   match_any:
     - { upos: VERB, VerbForm: Gdv }
     - { upos: ADJ, VerbForm: Gdv }
+    - { upos: VERB, VerbForm: Part, Aspect: prospective }
 examples:
   - lat: "Carthago delenda est"
     eng: "Carthage must be destroyed"

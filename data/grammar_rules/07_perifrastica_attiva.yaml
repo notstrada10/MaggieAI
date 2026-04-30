@@ -9,8 +9,18 @@ description: |
   or "intend to + infinitive".
 pattern:
   type: ud_pattern
+  # KNOWN LIMITATION: CLTK Stanza ittb mis-tags future active participles
+  # inconsistently. `Morituri` came back as Aspect=Perf+Voice=Act
+  # (correct), but `pugnaturus` came back as Aspect=Perf+Voice=Pass
+  # (wrong — same -urus suffix, model is unreliable). The pattern below
+  # matches the correctly-tagged subset; mistagged forms slip through
+  # detection and rely on the LLM identifying them from the morpho
+  # table. See blueprint §"Grammar rules = per-token matchers".
+  #
+  # The pattern over-matches on perfect active deponent participles
+  # (e.g. `locutus`, `profectus`) — accepted, the LLM disambiguates.
   match_any:
-    - { upos: VERB, VerbForm: Part, Tense: Fut, Voice: Act }
+    - { upos: VERB, VerbForm: Part, Aspect: Perf, Voice: Act }
 examples:
   - lat: "Caesar pugnaturus est"
     eng: "Caesar is about to fight / intends to fight"
