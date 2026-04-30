@@ -71,6 +71,7 @@ maggie-gateway = "maggieai.gateway.app:run"
 maggie-morphology = "maggieai.morphology.api:run"
 maggie-inference = "maggieai.inference.server:run"
 maggie-eval = "maggieai.eval.runner:cli"
+maggie-ui = "maggieai.ui.cli:main"
 
 [build-system]
 requires = ["hatchling"]
