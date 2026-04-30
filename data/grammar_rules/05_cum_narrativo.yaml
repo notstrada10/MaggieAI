@@ -11,8 +11,13 @@ description: |
   Distinguished from temporal-iterative `cum` (`cum` + indicative).
 pattern:
   type: ud_pattern
+  # The imperfect subjunctive in Latin UD is encoded as Aspect=Imp
+  # (with Tense=Past). UD has no Tense=Imp value for Latin — that was
+  # the original bug here. The pluperfect subjunctive is encoded
+  # straight as Tense=Pqp (Aspect=Perf). Both verified empirically
+  # against the CLTK Latin pipeline (Stanza ittb treebank).
   match_any:
-    - { upos: VERB, Mood: Sub, Tense: Imp }
+    - { upos: VERB, Mood: Sub, Aspect: Imp }
     - { upos: VERB, Mood: Sub, Tense: Pqp }
 examples:
   - lat: "Caesar cum in Galliam venisset, hostes vicit"
