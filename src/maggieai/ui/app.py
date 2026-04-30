@@ -246,8 +246,8 @@ def main() -> None:
             st.session_state["input_text"] = text
             with st.spinner("Calling /translate (Claude + morphology + retrieve)..."):
                 try:
-                    result = call_translate(text)
-                    st.session_state["last_result"] = result
+                    fresh_result = call_translate(text)
+                    st.session_state["last_result"] = fresh_result
                     st.session_state.pop("loaded_trace", None)
                 except httpx.HTTPError as exc:
                     st.error(f"Gateway error: {exc}")
@@ -262,15 +262,20 @@ def main() -> None:
     state_dump: dict[str, Any] | None = None
     if "loaded_trace" in st.session_state:
         trace = st.session_state["loaded_trace"]
-        state_dump = trace["state_dump"]
-        # The persisted state stores the response under "output"
-        result = state_dump.get("output") if state_dump else None
+        raw_dump = trace.get("state_dump")
+        if isinstance(raw_dump, dict):
+            state_dump = raw_dump
+            raw_output = state_dump.get("output")
+            if isinstance(raw_output, dict):
+                result = raw_output
         st.info(
             f"Viewing historical trace from `{trace['created_at']}` — "
             f"input: _{trace['input_text']}_"
         )
     elif "last_result" in st.session_state:
-        result = st.session_state["last_result"]
+        last = st.session_state["last_result"]
+        if isinstance(last, dict):
+            result = last
 
     if not result:
         st.caption("_(translate something or load a trace from the sidebar)_")

@@ -24,7 +24,13 @@ CREATE TABLE IF NOT EXISTS translation_pairs (
     translator  TEXT,
     license     TEXT,
     embedding   VECTOR(1024),
-    created_at  TIMESTAMPTZ   NOT NULL DEFAULT now()
+    created_at  TIMESTAMPTZ   NOT NULL DEFAULT now(),
+    -- Idempotency key for the loader. NULL parts are allowed (Postgres
+    -- treats NULLs as distinct in UNIQUE), so a row missing any of
+    -- author/work/locator won't conflict with another. In practice the
+    -- ingestion CLI always sets all three.
+    CONSTRAINT translation_pairs_author_work_locator_uq
+        UNIQUE (author, work, locator)
 );
 
 CREATE INDEX IF NOT EXISTS translation_pairs_embedding_hnsw_idx

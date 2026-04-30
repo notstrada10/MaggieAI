@@ -56,6 +56,7 @@ def _get_pipeline() -> Any:  # CLTK NLP type — annotated Any to avoid an impor
        on first ``analyze()``. Auto-yes handles it; future optimization
        could prune the embeddings process from the pipeline.
     """
+    import builtins
     import os
     from pathlib import Path
 
@@ -67,9 +68,7 @@ def _get_pipeline() -> Any:  # CLTK NLP type — annotated Any to avoid an impor
     # patching each binding is fragile. Instead we patch `builtins.input`,
     # which `query_yes_no` calls internally — works regardless of which
     # module raised the prompt or when it was imported.
-    import builtins
-
-    builtins.input = lambda *_args, **_kwargs: "yes"  # type: ignore[assignment]
+    builtins.input = lambda *_args, **_kwargs: "yes"
 
     # 2. Pre-download Stanza to the directory CLTK actually checks
     cltk_models_dir = Path("~/stanza_resources").expanduser()
@@ -198,9 +197,7 @@ def _extract_features(word: Any) -> dict[str, str]:
     raw = getattr(word, "features", None)
     if raw is None:
         return {}
-    if hasattr(raw, "items"):
-        items = raw.items()
-    elif isinstance(raw, dict):
+    if hasattr(raw, "items") or isinstance(raw, dict):
         items = raw.items()
     else:
         return {}

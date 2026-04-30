@@ -37,6 +37,11 @@ class Base(DeclarativeBase):
 
 class TranslationPair(Base):
     __tablename__ = "translation_pairs"
+    __table_args__ = (
+        UniqueConstraint(
+            "author", "work", "locator", name="translation_pairs_author_work_locator_uq"
+        ),
+    )
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     source_text: Mapped[str] = mapped_column(Text, nullable=False)

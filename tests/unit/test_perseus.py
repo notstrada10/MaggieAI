@@ -65,3 +65,21 @@ def test_parse_chapter_without_sections_has_no_section() -> None:
     segs = parse_dbg(TEI, books=[1])
     chap2 = next(s for s in segs if s.book == 1 and s.chapter == 2)
     assert chap2.section is None
+
+
+def test_parse_chapter_granularity_collapses_sections() -> None:
+    """granularity='chapter' aggregates section text into the chapter."""
+    segs = parse_dbg(TEI, books=[1], granularity="chapter")
+    locators = {s.locator for s in segs}
+    # No section-level locators emitted
+    assert "1.1.1" not in locators
+    assert "1.1.2" not in locators
+    # Chapter-level locators present (both 1.1 and 1.2)
+    assert "1.1" in locators
+    assert "1.2" in locators
+    # Concatenated text contains both sections from chapter 1.1
+    chap_1_1 = next(s for s in segs if s.locator == "1.1")
+    assert "Gallia est omnis divisa" in chap_1_1.text
+    assert "quarum unam incolunt Belgae" in chap_1_1.text
+    # Section field is None at chapter granularity
+    assert chap_1_1.section is None
