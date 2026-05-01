@@ -53,6 +53,15 @@ class Settings(BaseSettings):
     anthropic_api_key: str = Field(default="", description="Leave empty to disable Claude")
     claude_model: str = "claude-sonnet-4-6"
 
+    # --- Inference routing -----------------------------------------
+    inference_routing_mode: str | None = Field(
+        default=None,
+        description=(
+            "Override routing: 'hybrid' | 'local-only' | 'claude-only'. "
+            "When unset, the gateway auto-picks based on whether anthropic_api_key is provided."
+        ),
+    )
+
     # --- Embedding -------------------------------------------------
     embedding_model: str = "BAAI/bge-m3"
     embedding_dim: int = 1024

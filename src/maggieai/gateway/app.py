@@ -68,9 +68,13 @@ class RetrieveResponse(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
-    mode: RoutingMode = "hybrid" if settings.anthropic_api_key else "local-only"
-    if mode == "local-only":
-        logger.warning("ANTHROPIC_API_KEY not set — running in local-only mode.")
+    if settings.inference_routing_mode:
+        mode: RoutingMode = settings.inference_routing_mode  # type: ignore[assignment]
+        logger.info("Inference routing forced via INFERENCE_ROUTING_MODE=%s", mode)
+    else:
+        mode = "hybrid" if settings.anthropic_api_key else "local-only"
+        if mode == "local-only":
+            logger.warning("ANTHROPIC_API_KEY not set — running in local-only mode.")
     router = InferenceRouter(mode=mode)
     app.state.router = router
     app.state.graph = build_graph(router=router)
