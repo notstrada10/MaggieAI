@@ -5,7 +5,8 @@ Default strategy — HYBRID (local + Claude):
 - TRANSLATION / CRITIQUE → ClaudeApiClient (claude-sonnet-4-6)
 
 Can be overridden via env / constructor to push everything to local
-(mode='local-only') or to Claude (mode='claude-only').
+(mode='local-only'), to Claude (mode='claude-only'), or to DeepSeek
+(mode='deepseek-only').
 """
 
 from __future__ import annotations
@@ -20,11 +21,12 @@ from maggieai.inference.client import (
     InferenceClient,
     TaskKind,
 )
+from maggieai.inference.deepseek_api import DeepSeekApiClient
 from maggieai.inference.mlx_local import MlxLocalClient
 
 logger = logging.getLogger(__name__)
 
-RoutingMode = Literal["hybrid", "local-only", "claude-only"]
+RoutingMode = Literal["hybrid", "local-only", "claude-only", "deepseek-only"]
 
 
 class InferenceRouter:
@@ -33,10 +35,12 @@ class InferenceRouter:
         mode: RoutingMode = "hybrid",
         local: InferenceClient | None = None,
         claude: InferenceClient | None = None,
+        deepseek: InferenceClient | None = None,
     ) -> None:
         self.mode: RoutingMode = mode
         self._local = local
         self._claude = claude
+        self._deepseek = deepseek
 
     def _local_client(self) -> InferenceClient:
         if self._local is None:
@@ -48,11 +52,18 @@ class InferenceRouter:
             self._claude = ClaudeApiClient()
         return self._claude
 
+    def _deepseek_client(self) -> InferenceClient:
+        if self._deepseek is None:
+            self._deepseek = DeepSeekApiClient()
+        return self._deepseek
+
     def for_task(self, task: TaskKind) -> InferenceClient:
         if self.mode == "local-only":
             return self._local_client()
         if self.mode == "claude-only":
             return self._claude_client()
+        if self.mode == "deepseek-only":
+            return self._deepseek_client()
         # hybrid
         if task in (TaskKind.TRANSLATION, TaskKind.CRITIQUE):
             return self._claude_client()
@@ -64,6 +75,6 @@ class InferenceRouter:
         return await client.generate(request)
 
     async def aclose(self) -> None:
-        for c in (self._local, self._claude):
+        for c in (self._local, self._claude, self._deepseek):
             if c is not None:
                 await c.aclose()

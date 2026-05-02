@@ -83,7 +83,7 @@ async def draft_translation(state: AgentState, router: InferenceRouter) -> dict[
         TaskKind.TRANSLATION,
         GenerationRequest(
             messages=[Message("system", system), Message("user", user)],
-            max_tokens=1500,
+            max_tokens=4000,
             temperature=0.2,
             json_mode=True,
         ),
@@ -113,7 +113,7 @@ async def self_critique(state: AgentState, router: InferenceRouter) -> dict[str,
         TaskKind.CRITIQUE,
         GenerationRequest(
             messages=[Message("system", system), Message("user", user)],
-            max_tokens=800,
+            max_tokens=3000,
             temperature=0.0,
             json_mode=True,
         ),

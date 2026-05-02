@@ -72,9 +72,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         mode: RoutingMode = settings.inference_routing_mode  # type: ignore[assignment]
         logger.info("Inference routing forced via INFERENCE_ROUTING_MODE=%s", mode)
     else:
-        mode = "hybrid" if settings.anthropic_api_key else "local-only"
-        if mode == "local-only":
-            logger.warning("ANTHROPIC_API_KEY not set — running in local-only mode.")
+        # Auto: prefer DeepSeek if available (cheap + frontier), then Claude, then local.
+        if settings.deepseek_api_key:
+            mode = "deepseek-only"
+        elif settings.anthropic_api_key:
+            mode = "hybrid"
+        else:
+            mode = "local-only"
+            logger.warning("No cloud API key set — running in local-only mode.")
     router = InferenceRouter(mode=mode)
     app.state.router = router
     app.state.graph = build_graph(router=router)

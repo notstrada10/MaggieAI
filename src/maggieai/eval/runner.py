@@ -128,7 +128,7 @@ def run(gold: Path, gateway_url: str, limit: int | None) -> None:
     ref: list[str] = []
 
     async def _run_one(client: httpx.AsyncClient, text: str) -> str:
-        r = await client.post(f"{gateway_url}/translate", json={"text": text}, timeout=120.0)
+        r = await client.post(f"{gateway_url}/translate", json={"text": text}, timeout=600.0)
         r.raise_for_status()
         return str(r.json()["translation"])
 
