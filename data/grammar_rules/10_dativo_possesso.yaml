@@ -1,6 +1,7 @@
 phenomenon: dativo_possesso
 rule_type: morphological
 source: "Allen & Greenough §373"
+translation_template: 'Invert to English "have": "[dative-possessor] has [nominative-subject]". Mihi est liber → "I have a book", not "there is a book to me". Requires `esse` as the verb; with `habere` the construction is regular accusative possession.'
 description: |
   Construction `est + dative + nominative` to express possession. The
   possessor goes into the dative; the thing possessed goes into the

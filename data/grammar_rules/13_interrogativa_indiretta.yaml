@@ -1,0 +1,24 @@
+phenomenon: interrogativa_indiretta
+rule_type: syntactic
+source: "Allen & Greenough §574"
+translation_template: 'Render as an English indirect question: "[main verb] [interrogative word] [subject] [verb in indicative]". The Latin subjunctive collapses to English indicative: "Quaero quid faciat" → "I ask what he is doing", not "what he might do".'
+description: |
+  Indirect question — a subordinate clause introduced by an interrogative
+  particle or pronoun (`utrum / num / an`, `quis / quid / qui`,
+  `ubi / unde / quo`, `quomodo / quare / quando`) with the verb in the
+  subjunctive. It depends on a verb of asking, knowing, or doubting
+  (quaero, rogo, scio, nescio, ignoro, dico, video).
+  Distinguished from the direct question (`Quid facis?`) by being embedded.
+  Sequence of tenses applies: primary tense in main clause → present /
+  perfect subjunctive; secondary → imperfect / pluperfect subjunctive.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [utrum, num, an, quis, quid, quomodo, quare, quando, unde] }
+examples:
+  - lat: "Quaero quid faciat"
+    eng: "I ask what he is doing"
+    note: "Present subjunctive after primary main verb."
+  - lat: "Nesciebam ubi esset"
+    eng: "I did not know where he was"
+    note: "Imperfect subjunctive after secondary main verb (sequence of tenses)."

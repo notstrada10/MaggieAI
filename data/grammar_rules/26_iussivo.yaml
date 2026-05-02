@@ -1,0 +1,23 @@
+phenomenon: iussivo
+rule_type: morphological
+source: "Allen & Greenough §439"
+translation_template: 'Render with English "let X V" or imperative "X must V": "Veniat" → "Let him come / He must come". Negative: `ne` + subjunctive → "let him not V". Distinct from optative (utinam) which expresses a wish, not a command.'
+description: |
+  Jussive subjunctive — independent (main-clause) present subjunctive in
+  the 3rd person, expressing a command or strong wish addressed to
+  someone other than the speaker. Negative: `ne`.
+  WARNING: this pattern over-matches every 3rd-person subjunctive,
+  including those embedded in subordinate clauses (purpose, indirect
+  question, ut-completivo, etc.). Treat it as a candidate ONLY when the
+  verb is the head of an independent clause — check `dep_rel` is `root`.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, Mood: Sub, Person: "3", dep_rel: root }
+examples:
+  - lat: "Veniat ad nos"
+    eng: "Let him come to us"
+    note: "Present subjunctive, 3rd person, root verb."
+  - lat: "Ne abeat sine pecunia"
+    eng: "Let him not leave without the money"
+    note: "Negative jussive."

@@ -1,0 +1,28 @@
+phenomenon: gerundio
+rule_type: morphological
+source: "Allen & Greenough §502"
+translation_template: 'Render as English "-ing" gerund or "to V": "ars scribendi" → "the art of writing"; "ad pugnandum" → "for fighting / to fight"; "scribendo discimus" → "we learn by writing". Distinct from gerundive (passive, agreeing) — the gerund is invariable in -ndi/-ndo/-ndum/-ndo.'
+description: |
+  Gerund — verbal noun in -ndi (gen.), -ndo (dat./abl.), -ndum (acc.).
+  Active and indeclinable as to gender / number. Used to put a verb in
+  a case role:
+  - genitive: "ars scribendi" — purpose / objective genitive of a noun;
+  - dative: "operam dare scribendo" — purpose;
+  - accusative with `ad`: "ad pugnandum" — purpose;
+  - ablative: "scribendo discimus" — instrumental.
+  Distinct from the gerundive (passive, agreeing in case/gender/number) —
+  see `perifrastica_passiva`. CLTK's UD encoding for the gerund is
+  VerbForm=Vnoun (CLTK-specific) or VerbForm=Ger (canonical UD).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, VerbForm: Vnoun }
+    - { upos: VERB, VerbForm: Ger }
+    - { upos: NOUN, VerbForm: Vnoun }
+examples:
+  - lat: "Ars scribendi difficilis est"
+    eng: "The art of writing is difficult"
+    note: "Genitive of the gerund."
+  - lat: "Ad pugnandum venimus"
+    eng: "We came to fight (for fighting)"
+    note: "Ad + accusative of the gerund — purpose."

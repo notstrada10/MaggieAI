@@ -57,9 +57,13 @@ async def retrieve(state: AgentState) -> dict[str, Any]:
     # Embed the source text for semantic search
     from maggieai.ingestion.embedder import embed
 
+    settings = get_settings()
     [vec] = embed([state["input_text"]])
 
-    tm_hits = tm_lookup(vec, k=5)
+    raw_hits = tm_lookup(vec, k=settings.tm_k)
+    # Drop noisy hits beyond the configured cosine-distance cutoff. Keep
+    # the original ordering — tm_lookup returns rows in ascending distance.
+    tm_hits = [h for h in raw_hits if h["distance"] <= settings.tm_distance_threshold]
     g_hits = grammar_lookup(state.get("phenomena", []))
     return {"tm_hits": tm_hits, "grammar_hits": g_hits}
 

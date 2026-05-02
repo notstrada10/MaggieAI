@@ -4,10 +4,16 @@
 
 # Morphological analysis (CLTK)
 
-| # | Token | Lemma | POS | Features |
-|---|---|---|---|---|
+The `dep_rel` column is the Universal Dependencies label assigned by the
+parser (e.g. `nsubj` = nominal subject, `advcl:abs` = absolute adverbial
+clause, `acl` = clausal modifier of a noun, `obj` = direct object).
+The `head` column is the index of the syntactic governor (-1 = root).
+Trust your own knowledge over the parser when they disagree.
+
+| # | Token | Lemma | POS | Features | head | dep_rel |
+|---|---|---|---|---|---|---|
 {% for tok in morpho.tokens -%}
-| {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} |
+| {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} | {{ tok.head if tok.head is defined and tok.head is not none else '–' }} | {{ tok.dep_rel if tok.dep_rel is defined and tok.dep_rel else '–' }} |
 {% endfor %}
 
 # Detected constructs

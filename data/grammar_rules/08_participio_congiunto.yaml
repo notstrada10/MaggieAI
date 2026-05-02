@@ -1,6 +1,7 @@
 phenomenon: participio_congiunto
 rule_type: syntactic
 source: "Allen & Greenough §494"
+translation_template: 'Relative clause ("who V-s/V-ed", "which V-s/V-ed") OR "having V-ed" OR a temporal subordinate ("after/while V-ing"). The participle agrees with a noun/pronoun in the main clause — always identify the head noun before translating. Different from ablative absolute: here the participle is NOT in an absolute ablative pair.'
 description: |
   A participle (present, perfect, or future) that agrees in case, gender,
   and number with a noun or pronoun in the main clause. It expresses a

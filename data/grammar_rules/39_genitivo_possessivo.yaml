@@ -1,0 +1,25 @@
+phenomenon: genitivo_possessivo
+rule_type: morphological
+source: "Allen & Greenough §343"
+translation_template: 'Render as "[noun]''s [other noun]" or "of [noun]": "liber Caesaris" → "Caesar''s book / the book of Caesar". Distinct from partitive genitive ("of the Gauls" = "out of the Gauls") and from objective genitive ("love of money" = "loving money"). Default reading when no quantity-head or psychological-noun head is present.'
+description: |
+  Possessive genitive — the noun in the genitive denotes the owner / the
+  whole that the head noun belongs to. Default reading when:
+  - the head noun is concrete and the genitive is animate;
+  - no comparative / superlative / partitive trigger is present;
+  - the head is not a psychological / verbal noun that takes an
+    objective genitive (amor, timor, spes, cupiditas).
+  Pattern matches all genitive nouns / pronouns; the LLM picks among
+  partitivo / oggettivo / qualita / possessivo from context.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: NOUN, Case: Gen }
+    - { upos: PROPN, Case: Gen }
+examples:
+  - lat: "Liber Caesaris"
+    eng: "Caesar's book / the book of Caesar"
+    note: "Possessive genitive — straightforward."
+  - lat: "Domus Pompei"
+    eng: "Pompey's house"
+    note: "Genitive of the owner."

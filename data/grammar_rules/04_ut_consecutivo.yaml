@@ -1,6 +1,7 @@
 phenomenon: ut_consecutivo
 rule_type: syntactic
 source: "Allen & Greenough §537"
+translation_template: '"so/such ... that [finite verb]". Negative `ut non` → "so/such ... that ... not". Look for tam/tantus/ita/sic/adeo in the main clause as the trigger; without it, suspect ut_finale instead.'
 description: |
   Result clause (consequence) introduced by `ut` (negative: `ut non`),
   often anticipated by `tam`, `tantus`, `ita`, `sic`, `adeo` in the main

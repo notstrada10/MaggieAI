@@ -1,0 +1,24 @@
+phenomenon: accusativo_moto_a_luogo
+rule_type: morphological
+source: "Allen & Greenough §427"
+translation_template: 'Render as "to [place]" with a verb of motion: "Romam ire" → "to go to Rome". Names of towns and small islands take BARE accusative (no preposition); other places take `ad / in + accusative`. Special: `domum` ("home"), `rus` ("countryside").'
+description: |
+  Accusative of place to which (motion towards) — used after verbs of
+  motion (eo, venio, proficiscor, mitto, contendo). Three patterns:
+  1. Names of towns / small islands of the 1st-2nd declensions singular:
+     bare accusative (`Romam, Athenas, Carthaginem`);
+  2. Other places: `ad + accusative` ("ad urbem") or `in + accusative`
+     ("in Galliam");
+  3. Fixed forms `domum` ("homewards") and `rus` ("to the countryside").
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: PROPN, Case: Acc }
+    - { upos: ADP, lemma_in: [ad, in] }
+examples:
+  - lat: "Caesar Romam profectus est"
+    eng: "Caesar set out for Rome"
+    note: "Town name in bare accusative."
+  - lat: "Ad montem ascendit"
+    eng: "He climbed to the mountain"
+    note: "Common noun with ad + accusative."

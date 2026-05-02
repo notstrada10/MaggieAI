@@ -14,10 +14,10 @@
 
 ## Morphological analysis
 
-| # | Token | Lemma | POS | Features |
-|---|---|---|---|---|
+| # | Token | Lemma | POS | Features | head | dep_rel |
+|---|---|---|---|---|---|---|
 {% for tok in morpho.tokens -%}
-| {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} |
+| {{ tok.index }} | `{{ tok.text }}` | {{ tok.lemma or '?' }} | {{ tok.pos or '?' }} | {{ tok.features | tojson }} | {{ tok.head if tok.head is defined and tok.head is not none else '–' }} | {{ tok.dep_rel if tok.dep_rel is defined and tok.dep_rel else '–' }} |
 {% endfor %}
 
 ## Detected grammar rules

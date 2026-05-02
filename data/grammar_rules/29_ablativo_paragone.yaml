@@ -1,0 +1,21 @@
+phenomenon: ablativo_paragone
+rule_type: morphological
+source: "Allen & Greenough §406"
+translation_template: 'Render as "than [noun]": "altior monte" = "altior quam mons" → "taller than the mountain". Two equivalent Latin constructions: bare ablative OR `quam + nominative/accusative matching the compared term`. Choose whichever the source uses.'
+description: |
+  Ablative of comparison — after a comparative adjective or adverb,
+  Latin uses either `quam + matching case` or the bare ablative of the
+  thing compared. The bare ablative is preferred for short, single-word
+  comparisons ("dulcior melle" = "sweeter than honey").
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: ADJ, Degree: Cmp }
+    - { upos: ADV, Degree: Cmp }
+examples:
+  - lat: "Caesar fortior milite est"
+    eng: "Caesar is braver than the soldier"
+    note: "Bare ablative `milite` after comparative `fortior`."
+  - lat: "Mel dulcius est aqua"
+    eng: "Honey is sweeter than water"
+    note: "Bare ablative of comparison."

@@ -1,0 +1,24 @@
+phenomenon: genitivo_oggettivo
+rule_type: morphological
+source: "Allen & Greenough §347"
+translation_template: 'Render as "of / for [noun]" with an OBJECT-of-the-action reading: "amor patriae" → "love of/for one''s country" (= "loving one''s country", not "the country''s love"); "timor mortis" → "fear of death". Trigger: head noun is psychological / verbal — amor, timor, spes, cupiditas, metus, ratio, memoria.'
+description: |
+  Objective genitive — the noun in the genitive is the OBJECT of the
+  action implied by the head noun (a verbal/psychological noun).
+  Triggers — head nouns expressing emotion, mental act, or activity:
+  `amor, timor, metus, spes, cupiditas, desiderium, memoria, oblivio,
+  ratio, cognitio, scientia, peritia`.
+  Distinct from subjective genitive ("amor matris" → "the mother's
+  love" = mother as the lover, ambiguous in form, disambiguated by
+  context).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [amor, timor, metus, spes, cupiditas, desiderium, memoria, oblivio, ratio, cognitio, scientia, peritia] }
+examples:
+  - lat: "Amor patriae"
+    eng: "Love for one's country"
+    note: "Patriae = object of the verbal noun amor."
+  - lat: "Timor mortis"
+    eng: "Fear of death"
+    note: "Mortis = what is feared, not who fears."

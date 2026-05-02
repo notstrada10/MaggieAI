@@ -195,3 +195,78 @@ def test_perifrastica_attiva_misses_mistagged_pugnaturus() -> None:
         _tok(0, "pugnaturus", "VERB", VerbForm="Part", Aspect="Perf", Voice="Pass"),
     )
     assert detect(sent, [PERIFRASTICA_ATTIVA]) == []
+
+
+# Pattern-key extensions: lemma, lemma_in, dep_rel
+def _tok_lemma(idx: int, text: str, pos: str, lemma: str, **features: str) -> TokenAnalysis:
+    return TokenAnalysis(index=idx, text=text, lemma=lemma, pos=pos, features=features)
+
+
+def _tok_dep(idx: int, text: str, pos: str, dep_rel: str, **features: str) -> TokenAnalysis:
+    return TokenAnalysis(
+        index=idx, text=text, lemma=text.lower(), pos=pos, features=features, dep_rel=dep_rel
+    )
+
+
+CUM_INDICATIVE = {
+    "phenomenon": "cum_indicativo",
+    "pattern": {
+        "type": "ud_pattern",
+        "match_any": [{"upos": "SCONJ", "lemma": "cum"}],
+    },
+}
+
+POSTQUAM = {
+    "phenomenon": "postquam_ubi_simul",
+    "pattern": {
+        "type": "ud_pattern",
+        "match_any": [{"upos": "SCONJ", "lemma_in": ["postquam", "ubi", "simul"]}],
+    },
+}
+
+REL_CHARACTERISTIC = {
+    "phenomenon": "relativa_caratteristica",
+    "pattern": {
+        "type": "ud_pattern",
+        "match_any": [{"upos": "VERB", "Mood": "Sub", "dep_rel": "acl:relcl"}],
+    },
+}
+
+
+def test_lemma_match_cum() -> None:
+    sent = _sent(_tok_lemma(0, "cum", "SCONJ", "cum"))
+    assert detect(sent, [CUM_INDICATIVE]) == ["cum_indicativo"]
+
+
+def test_lemma_match_is_case_insensitive() -> None:
+    """CLTK occasionally returns capitalised lemmas; the matcher must
+    normalise both sides."""
+    sent = _sent(_tok_lemma(0, "Cum", "SCONJ", "Cum"))
+    assert detect(sent, [CUM_INDICATIVE]) == ["cum_indicativo"]
+
+
+def test_lemma_does_not_match_different_word() -> None:
+    sent = _sent(_tok_lemma(0, "ut", "SCONJ", "ut"))
+    assert detect(sent, [CUM_INDICATIVE]) == []
+
+
+def test_lemma_in_matches_any_listed() -> None:
+    sent = _sent(_tok_lemma(0, "Postquam", "SCONJ", "postquam"))
+    assert detect(sent, [POSTQUAM]) == ["postquam_ubi_simul"]
+    sent2 = _sent(_tok_lemma(0, "ubi", "SCONJ", "ubi"))
+    assert detect(sent2, [POSTQUAM]) == ["postquam_ubi_simul"]
+
+
+def test_lemma_in_does_not_match_unlisted() -> None:
+    sent = _sent(_tok_lemma(0, "antequam", "SCONJ", "antequam"))
+    assert detect(sent, [POSTQUAM]) == []
+
+
+def test_dep_rel_match() -> None:
+    sent = _sent(_tok_dep(0, "amet", "VERB", "acl:relcl", Mood="Sub"))
+    assert detect(sent, [REL_CHARACTERISTIC]) == ["relativa_caratteristica"]
+
+
+def test_dep_rel_does_not_match_when_relation_differs() -> None:
+    sent = _sent(_tok_dep(0, "amet", "VERB", "advcl", Mood="Sub"))
+    assert detect(sent, [REL_CHARACTERISTIC]) == []

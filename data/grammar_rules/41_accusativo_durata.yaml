@@ -1,0 +1,24 @@
+phenomenon: accusativo_durata
+rule_type: morphological
+source: "Allen & Greenough §423"
+translation_template: 'Render as "for [duration]" / "throughout [duration]": "decem annos regnavit" → "he reigned for ten years"; "tres horas pugnaverunt" → "they fought for three hours". Bare accusative — never preceded by `per` in classical prose unless emphasis is needed. Distinct from time-when (ablative).'
+description: |
+  Accusative of duration of time — a temporal noun in the accusative
+  expressing how long the action lasted. Common nouns: `annus, mensis,
+  dies, hora, nox, vita`. Often preceded by a numeral.
+  Distinct from:
+  - ablative of time when (`hieme` = "in winter") — a point in time;
+  - ablative of time within which (`tribus diebus` = "within three
+    days") — a window during which the action completes.
+  Pattern matches accusative nouns of time / duration units.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: NOUN, Case: Acc, lemma_in: [annus, mensis, dies, hora, nox, vita, aetas, saeculum] }
+examples:
+  - lat: "Caesar decem annos in Gallia bellum gessit"
+    eng: "Caesar waged war in Gaul for ten years"
+    note: "`decem annos` = duration."
+  - lat: "Multas horas pugnaverunt"
+    eng: "They fought for many hours"
+    note: "`multas horas` = duration."

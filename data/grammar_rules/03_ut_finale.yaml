@@ -1,6 +1,7 @@
 phenomenon: ut_finale
 rule_type: syntactic
 source: "Allen & Greenough §531"
+translation_template: '"(in order) to V" or "so that ... may/might V". Negative `ne` → "so as not to V" / "lest ... V". Never render as a result clause ("so that ... did").'
 description: |
   Final (purpose) clause introduced by `ut` (negative: `ne`) with the
   verb in the present or imperfect subjunctive.

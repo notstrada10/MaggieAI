@@ -1,0 +1,23 @@
+phenomenon: dativo_fine
+rule_type: morphological
+source: "Allen & Greenough §382"
+translation_template: 'Render as "for / for the purpose of [noun]": "auxilio venire" → "to come for help / as help"; "praesidio esse" → "to serve as a guard". Often paired with a second dative of the person served — the DOUBLE DATIVE: "Caesar militibus praesidio fuit" → "Caesar was [as] a protection FOR the soldiers".'
+description: |
+  Dative of purpose / end (dativus finalis) — a noun in the dative
+  expressing the purpose, end, or service of the action. Common nouns:
+  `auxilio, praesidio, subsidio, exemplo, usui, dono, honori, curae,
+  bono, malo`.
+  Often combined with another dative (of the person interested) in the
+  DOUBLE DATIVE construction — both nouns in the dative, one purpose,
+  one beneficiary.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [auxilium, praesidium, subsidium, usus, donum, honor, cura, exemplum] }
+examples:
+  - lat: "Caesar militibus praesidio fuit"
+    eng: "Caesar served as a protection for the soldiers"
+    note: "Double dative: praesidio = purpose, militibus = beneficiary."
+  - lat: "Hoc tibi exemplo sit"
+    eng: "Let this be an example for you"
+    note: "Exemplo = dative of purpose; tibi = dative of person."

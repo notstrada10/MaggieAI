@@ -1,0 +1,22 @@
+phenomenon: supino_um
+rule_type: morphological
+source: "Allen & Greenough §509"
+translation_template: 'Render as "to V" expressing purpose, after a verb of motion: "venit oratum auxilium" → "he came to ask for help". The supine in -u (after adjectives like `mirabile dictu`) is a different rule.'
+description: |
+  Supine in -um — verbal noun in the accusative form, used after verbs
+  of motion to express purpose. Always governs the case its underlying
+  verb would govern (e.g., `auxilium oratum` — `oratum` keeps the
+  direct-object construction of `oro`).
+  Distinct from the supine in -u (ablative of respect / specification,
+  after adjectives — "mirabile dictu" = "wondrous to tell").
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, VerbForm: Sup }
+examples:
+  - lat: "Legati venerunt pacem petitum"
+    eng: "The envoys came to seek peace"
+    note: "Petitum = supine in -um after a verb of motion."
+  - lat: "Pueri ludum eunt lusum"
+    eng: "The boys go to school to play"
+    note: "Lusum = supine of `ludo`, purpose after `eunt`."

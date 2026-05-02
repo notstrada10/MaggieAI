@@ -56,6 +56,19 @@ def _token_matches(token: TokenAnalysis, criteria: dict[str, Any]) -> bool:
         if key == "upos":
             if token.pos != expected:
                 return False
+        elif key == "lemma":
+            # Case-insensitive match: CLTK occasionally returns capitalised
+            # lemmas for proper nouns and the YAML files spell triggers
+            # like "cum", "postquam" lower-case.
+            if (token.lemma or "").lower() != str(expected).lower():
+                return False
+        elif key == "lemma_in":
+            allowed = {str(v).lower() for v in expected}
+            if (token.lemma or "").lower() not in allowed:
+                return False
+        elif key == "dep_rel":
+            if token.dep_rel != expected:
+                return False
         else:
             if token.features.get(key) != expected:
                 return False

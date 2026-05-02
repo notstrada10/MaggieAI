@@ -1,0 +1,31 @@
+phenomenon: dum
+rule_type: syntactic
+source: "Allen & Greenough §555"
+translation_template: |
+  Three senses keyed to mood + tense:
+  1. "while" — `dum` + present indicative even of a past action ("while
+     X was V-ing"): "Dum haec geruntur, Caesar venit" → "While these
+     things were going on, Caesar came".
+  2. "as long as" — `dum` + indicative (matching tense): "Dum vita est,
+     spes est" → "As long as there is life, there is hope".
+  3. "until" — `dum` + subjunctive (purpose / expectation): "Exspecto
+     dum veniat" → "I am waiting until he comes".
+description: |
+  `dum` clause — three meanings depending on mood + tense:
+  - "while" (durative) — present indicative even when the rest of the
+    narrative is in the past;
+  - "as long as" — indicative, same tense family as the main verb;
+  - "until" — subjunctive, with verbs of waiting / preventing.
+  Same connector exists in `donec` and `quoad` (less frequent).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: SCONJ, lemma: dum }
+    - { lemma_in: [donec, quoad] }
+examples:
+  - lat: "Dum haec geruntur, Caesar advenit"
+    eng: "While these things were happening, Caesar arrived"
+    note: "Dum + present indicative for past durative."
+  - lat: "Manebo dum redeas"
+    eng: "I will wait until you return"
+    note: "Dum + subjunctive — anticipation."

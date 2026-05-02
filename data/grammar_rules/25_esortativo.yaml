@@ -1,0 +1,20 @@
+phenomenon: esortativo
+rule_type: morphological
+source: "Allen & Greenough §439"
+translation_template: 'Render with English "let us V": "Eamus" → "Let us go". Negative: `ne` + subjunctive → "let us not V". Avoid translating as a plain future — the subjunctive carries exhortation, not prediction.'
+description: |
+  Hortatory subjunctive — independent (main-clause) present subjunctive
+  in the 1st person plural, urging joint action. Negative: `ne`.
+  Distinguished from a future indicative ("we shall V") by the mood —
+  always check the morpho table for Mood=Sub before applying.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, Mood: Sub, Person: "1", Number: Plur }
+examples:
+  - lat: "Eamus ad forum"
+    eng: "Let us go to the forum"
+    note: "Present subjunctive, 1st plural — exhortation."
+  - lat: "Ne hoc faciamus"
+    eng: "Let us not do this"
+    note: "Negative hortatory with ne."

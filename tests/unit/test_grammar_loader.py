@@ -59,12 +59,15 @@ def test_normalize_passes_pattern_through() -> None:
 
 
 def test_load_real_grammar_files_pass_validation() -> None:
-    """Smoke check: the 12 YAML files versioned in the repo pass validation."""
+    """Smoke check: every versioned YAML in data/grammar_rules passes
+    validation and normalises into a usable row.
+    """
     import yaml
 
     grammar_dir = Path(__file__).resolve().parents[2] / "data" / "grammar_rules"
     yaml_files = sorted(grammar_dir.glob("*.yaml"))
-    assert len(yaml_files) == 12, f"expected 12 files, found {len(yaml_files)}"
+    assert len(yaml_files) >= 12, f"expected at least 12 files, found {len(yaml_files)}"
+    seen_phenomena: set[str] = set()
     for path in yaml_files:
         with path.open(encoding="utf-8") as f:
             data = yaml.safe_load(f)
@@ -72,3 +75,7 @@ def test_load_real_grammar_files_pass_validation() -> None:
         out = _normalize(data)
         assert out["phenomenon"]
         assert out["pattern"]
+        assert out["phenomenon"] not in seen_phenomena, (
+            f"duplicate phenomenon slug: {out['phenomenon']} in {path.name}"
+        )
+        seen_phenomena.add(out["phenomenon"])

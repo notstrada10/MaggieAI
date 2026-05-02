@@ -1,0 +1,23 @@
+phenomenon: ut_completivo
+rule_type: syntactic
+source: "Allen & Greenough §588"
+translation_template: 'Render as English "[main verb] (X) to V": "Imperat ut veniant" → "He orders them to come". Do NOT render as a purpose ("in order to") or a result clause. With `ne` the negation moves: "Imperat ne veniant" → "He orders them not to come".'
+description: |
+  Completive (substantive) `ut` clause — the subjunctive clause functions
+  as the OBJECT of a verb of commanding, requesting, exhorting, or
+  persuading (`impero, iubeo, hortor, peto, rogo, oro, suadeo,
+  persuadeo, moneo, postulo, mando`). Negative: `ne`.
+  Distinguished from `ut_finale` (purpose, adverbial) and `ut_consecutivo`
+  (result, signalled by tam/tantus/ita): here the ut-clause is the verb's
+  argument, often with a person in the dative/accusative.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [impero, iubeo, hortor, peto, rogo, oro, suadeo, persuadeo, moneo, postulo, mando, censeo] }
+examples:
+  - lat: "Caesar militibus imperat ut hostes oppugnent"
+    eng: "Caesar orders the soldiers to attack the enemy"
+    note: "ut + present subjunctive after impero."
+  - lat: "Persuasit eis ne proficiscerentur"
+    eng: "He persuaded them not to set out"
+    note: "ne + imperfect subjunctive (negative completive)."

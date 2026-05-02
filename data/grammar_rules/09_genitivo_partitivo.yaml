@@ -1,6 +1,7 @@
 phenomenon: genitivo_partitivo
 rule_type: morphological
 source: "Allen & Greenough §346"
+translation_template: '"of [noun]" or "among [noun]". Triggered by a head expressing a part/quantity (superlative, comparative, indefinite pronoun, numeral, pars/numerus/copia). If no such head exists, the genitive is more likely possessive or objective, not partitive.'
 description: |
   Genitive expressing the whole of which a part is taken. It appears
   after: indefinite pronouns and adjectives (nemo, aliquis, multi,

@@ -1,6 +1,7 @@
 phenomenon: ablativo_assoluto
 rule_type: syntactic
 source: "Allen & Greenough §419"
+translation_template: '"with X V-ing" / "after X had been V-ed" / "since/while/although X V-ed" — pick the temporal-causal nuance from context. Never use "with" mechanically; choose the connector that fits the discourse.'
 description: |
   A participial construction in Latin made up of a noun (or pronoun) and a
   participle, both in the ablative, syntactically independent of the main

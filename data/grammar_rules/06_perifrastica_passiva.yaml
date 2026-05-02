@@ -1,6 +1,7 @@
 phenomenon: perifrastica_passiva
 rule_type: syntactic
 source: "Allen & Greenough §500"
+translation_template: '"must be V-ed" / "is to be V-ed" / "has to be V-ed". A noun in the dative associated with the gerundive is the agent → "by [agent]". Carries obligation/necessity, not simple futurity.'
 description: |
   Construction made up of the gerundive (future passive participle,
   suffix -ndus, -nda, -ndum) + a form of `esse`. It expresses necessity

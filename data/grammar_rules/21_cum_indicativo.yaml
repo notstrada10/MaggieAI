@@ -1,0 +1,23 @@
+phenomenon: cum_indicativo
+rule_type: syntactic
+source: "Allen & Greenough §545"
+translation_template: 'Render as "when" (single occurrence) or "whenever" (iterative). Not "since / although" — the indicative carries no causal/concessive coloring; that is the job of `cum_narrativo` (cum + subj.).'
+description: |
+  `cum` + indicative — purely temporal or iterative.
+  - Temporal: a single moment ("when X happened, Y happened too").
+  - Iterative: a repeated coincidence ("whenever X, then Y").
+  Distinguished from `cum_narrativo` (cum + subj.) — which carries
+  temporal-circumstantial / causal / concessive nuance — by the mood of
+  the cum-clause verb. Always check the verb's Mood column before
+  picking a connector.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: SCONJ, lemma: cum }
+examples:
+  - lat: "Caesar veniebat cum hostes fugiebant"
+    eng: "Caesar was coming when the enemies were fleeing"
+    note: "Cum + imperfect indicative — simultaneous past action."
+  - lat: "Cum Caesar veniebat, hostes fugiebant"
+    eng: "Whenever Caesar came, the enemies fled"
+    note: "Iterative cum + indicative."

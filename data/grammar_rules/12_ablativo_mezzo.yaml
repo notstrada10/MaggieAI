@@ -1,6 +1,7 @@
 phenomenon: ablativo_di_mezzo
 rule_type: morphological
 source: "Allen & Greenough §409"
+translation_template: '"with [noun]" / "by means of [noun]". For an inanimate means: bare ablative. For an animate agent: a/ab + ablative (ablative of agent — different rule). Never translate an instrumental as a partitive.'
 description: |
   Instrumental ablative (without a preposition) expressing the means,
   instrument, or concrete manner with which an action is carried out.

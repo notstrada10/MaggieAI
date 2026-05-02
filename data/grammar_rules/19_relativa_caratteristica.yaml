@@ -1,0 +1,24 @@
+phenomenon: relativa_caratteristica
+rule_type: syntactic
+source: "Allen & Greenough §535"
+translation_template: 'Render with "of the kind that / such that / one to V" rather than a plain relative clause: "Sunt qui dicant" → "There are those who say / There are some who would say", NOT "There are who say". Highlight the categorical character — the antecedent is described by class, not identified.'
+description: |
+  Relative clause of characteristic / generic relative — a relative pronoun
+  (`qui, quae, quod`) with the verb in the subjunctive, describing the
+  KIND of person or thing the antecedent belongs to. Common after:
+  `sunt qui, est qui, nemo est qui, quis est qui, dignus qui, idoneus
+  qui, solus qui`.
+  Distinct from a definite relative clause (qui + indicative = identifies
+  the antecedent). Distinct from purpose (qui + subj after verbs of
+  motion = "he sent men WHO would V").
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: VERB, Mood: Sub, dep_rel: "acl:relcl" }
+examples:
+  - lat: "Sunt qui dicant Caesarem nondum venisse"
+    eng: "There are those who say (some say) that Caesar has not yet come"
+    note: "Generic — speakers in the abstract, not identified individuals."
+  - lat: "Caesar legatos misit qui pacem peterent"
+    eng: "Caesar sent envoys to seek peace"
+    note: "Relative-of-purpose nuance: 'who would seek' = 'in order to seek'."

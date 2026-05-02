@@ -84,11 +84,20 @@ def _validate(data: Any, path: Path) -> None:
 
 
 def _normalize(data: dict[str, Any]) -> dict[str, Any]:
+    description = data["description"].strip()
+    template = (data.get("translation_template") or "").strip()
+    if template:
+        # Surface the template as a structured trailing block so the LLM
+        # gets a clear, scoped rendering signal in the grammar_hits
+        # section of `draft_translation.j2`. We splice it into the
+        # description (rather than adding a new column) to avoid a DB
+        # migration for one optional field.
+        description = f"{description}\n\n**Render as:** {template}"
     return {
         "phenomenon": data["phenomenon"],
         "rule_type": data["rule_type"],
         "pattern": data["pattern"],
-        "description": data["description"].strip(),
+        "description": description,
         "examples": data.get("examples", []),
         "source": data.get("source"),
     }

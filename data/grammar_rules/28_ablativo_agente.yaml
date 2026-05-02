@@ -1,0 +1,20 @@
+phenomenon: ablativo_agente
+rule_type: morphological
+source: "Allen & Greenough §405"
+translation_template: 'Render as "by [agent]" with a passive verb: "Caesar a militibus laudatur" → "Caesar is praised by the soldiers". Distinct from instrumental ablative (means) which is bare ablative + "with / by means of"; agent of person requires `a/ab`.'
+description: |
+  Ablative of agent — `a / ab` + ablative (animate) used with passive
+  verbs to denote the doer of the action. With inanimate means the
+  ablative is bare (see `ablativo_di_mezzo`). Some abstract nouns
+  (fortuna, fama) take the ablative of agent construction by personification.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: ADP, lemma_in: [a, ab, abs] }
+examples:
+  - lat: "Caesar a militibus laudatur"
+    eng: "Caesar is praised by the soldiers"
+    note: "Animate agent — a + ablative."
+  - lat: "Hostes ab equitibus victi sunt"
+    eng: "The enemies were defeated by the cavalry"
+    note: "Animate agent with passive perfect."

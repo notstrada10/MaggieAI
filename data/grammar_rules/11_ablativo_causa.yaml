@@ -1,6 +1,7 @@
 phenomenon: ablativo_di_causa
 rule_type: morphological
 source: "Allen & Greenough §404"
+translation_template: '"because of [noun]" / "out of [noun]" / "for [noun]". Frequent with verbs of emotion (gaudere, dolere, laetari, timere). Distinguish from instrumental ablative (means) and ablative of manner.'
 description: |
   Ablative (bare or preceded by `prae`, `propter`, `ob`) expressing the
   cause of an action or state. Common with verbs of emotion (gaudere,

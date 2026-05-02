@@ -1,0 +1,23 @@
+phenomenon: concessiva
+rule_type: syntactic
+source: "Allen & Greenough §527"
+translation_template: 'Render as "although / though / even though [finite verb]". `quamquam` + indicative = factual concession. `quamvis / licet` + subjunctive = hypothetical concession ("however much / granted that"). Never as "because" — concession concedes the opposite.'
+description: |
+  Concessive clause — admits a fact that runs counter to the main clause.
+  Connectors and moods:
+  - `quamquam` + indicative — factual ("although he is brave");
+  - `quamvis, licet` + subjunctive — hypothetical or rhetorical ("however
+    brave he may be / granted that he is brave");
+  - `etsi / tametsi` — like quamquam but more emphatic;
+  - `cum` concessive — see `cum_narrativo`.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [quamquam, quamvis, etsi, tametsi, licet] }
+examples:
+  - lat: "Quamquam fortis est, fugit"
+    eng: "Although he is brave, he flees"
+    note: "Quamquam + indicative — factual concession."
+  - lat: "Quamvis sit fortis, vincetur"
+    eng: "However brave he may be, he will be defeated"
+    note: "Quamvis + subjunctive — hypothetical concession."

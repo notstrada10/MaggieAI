@@ -1,0 +1,22 @@
+phenomenon: ne_timore
+rule_type: syntactic
+source: "Allen & Greenough §564"
+translation_template: 'Latin polarity inverts in English: `ne` after a verb of fearing → "that", and `ne non` (or `ut`) → "that ... not". "Timeo ne veniat" → "I fear that he will come / may come" (not "lest he comes"). "Timeo ne non veniat" → "I fear that he will not come".'
+description: |
+  Fearing clause — after a verb of fearing (`timeo, metuo, vereor,
+  paveo, pertimesco`), the subordinate verb is in the subjunctive
+  introduced by `ne` (= the speaker fears it WILL happen) or by
+  `ne non` / `ut` (= the speaker fears it WILL NOT happen).
+  Counterintuitive polarity: Latin `ne` does not negate the wish — it
+  introduces what is feared. Tense follows sequence-of-tenses.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [timeo, metuo, vereor, paveo, pertimesco, formido] }
+examples:
+  - lat: "Timeo ne veniat"
+    eng: "I fear that he may come"
+    note: "Positive fear: the speaker does not want him to come."
+  - lat: "Vereor ut hostes veniant"
+    eng: "I fear that the enemy will not come"
+    note: "ut after vereor = fear that something will NOT happen."

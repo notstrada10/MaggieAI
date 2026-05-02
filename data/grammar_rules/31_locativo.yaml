@@ -1,0 +1,22 @@
+phenomenon: locativo
+rule_type: morphological
+source: "Allen & Greenough §427"
+translation_template: 'Render as "in / at [place]": "Romae" → "in/at Rome", "domi" → "at home", "ruri" → "in the countryside". The locative is a SEPARATE case in Latin, surviving in fossilised forms — do not translate as if it were genitive or ablative.'
+description: |
+  Locative case — surviving in: names of towns and small islands of the
+  1st and 2nd declensions singular (Romae, Corinthi, Athenis), `domi`,
+  `humi`, `ruri`, `belli`, `militiae`, and a handful of common nouns.
+  Plural town names use the ablative form for locative function (Athenis).
+  Distinct from the ablative of place where (`in + ablative` for general
+  places).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { Case: Loc }
+examples:
+  - lat: "Romae habito"
+    eng: "I live in Rome"
+    note: "Locative singular of Roma."
+  - lat: "Domi sumus"
+    eng: "We are at home"
+    note: "Fossil locative `domi`."

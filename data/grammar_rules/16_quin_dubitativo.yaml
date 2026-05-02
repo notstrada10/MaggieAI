@@ -1,0 +1,22 @@
+phenomenon: quin_dubitativo
+rule_type: syntactic
+source: "Allen & Greenough §558"
+translation_template: 'Render as "that": "Non dubito quin verum sit" → "I do not doubt that it is true" (NOT "but that"). After negative + `quin`, the English clause is positive — Latin double-negation collapses.'
+description: |
+  `quin` + subjunctive after a negated expression of doubting / hindering
+  / preventing (`non dubito, quis dubitat, non est dubium, nemo dubitat,
+  prohibeo, retineo, deterreo`). The clause asserts that the action
+  occurs / occurred.
+  After a non-negated verb of doubting, Latin uses an indirect question
+  (utrum / num + subj.) instead — see `interrogativa_indiretta`.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma: quin }
+examples:
+  - lat: "Non dubito quin verum sit"
+    eng: "I do not doubt that it is true"
+    note: "Standard `non dubito quin` pattern."
+  - lat: "Quis dubitat quin Caesar venturus sit?"
+    eng: "Who doubts that Caesar is going to come?"
+    note: "Rhetorical negation via `quis dubitat?`."

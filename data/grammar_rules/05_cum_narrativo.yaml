@@ -1,6 +1,7 @@
 phenomenon: cum_narrativo
 rule_type: syntactic
 source: "Allen & Greenough §546"
+translation_template: '"when/since/although [past finite verb]". Pluperfect subjunctive (Tense=Pqp) = anteriority → "when/after X had V-ed". Imperfect subjunctive (Aspect=Imp) = contemporaneity → "while/when X was V-ing". Pick the connector (when vs since vs although) from context.'
 description: |
   Construction characteristic of historical narrative: `cum` + imperfect
   subjunctive (contemporaneous action) or pluperfect subjunctive (anterior

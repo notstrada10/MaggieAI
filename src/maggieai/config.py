@@ -71,6 +71,23 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-m3"
     embedding_dim: int = 1024
 
+    # --- Translation Memory retrieval ------------------------------
+    tm_k: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="Top-k TM hits returned by semantic search per /translate call.",
+    )
+    tm_distance_threshold: float = Field(
+        default=0.75,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Cosine distance cutoff. Hits with distance > threshold are dropped "
+            "(noise floor). Set to 1.0 to keep all top-k regardless of distance."
+        ),
+    )
+
     # --- Logging / observability -----------------------------------
     log_level: str = "INFO"
     langsmith_tracing: bool = False

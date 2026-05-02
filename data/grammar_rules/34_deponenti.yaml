@@ -1,0 +1,25 @@
+phenomenon: deponenti
+rule_type: morphological
+source: "Allen & Greenough §156"
+translation_template: 'Render as ACTIVE in English even though the form is passive: "loquor" → "I speak" (NOT "I am spoken"); "Caesar hostes secutus est" → "Caesar followed the enemies" (NOT "Caesar was followed"). The participle of a deponent is an active perfect participle — translate as "having V-ed".'
+description: |
+  Deponent verbs — verbs with passive form but active meaning. Common
+  deponents: `hortor, loquor, sequor, utor, fungor, fruor, potior,
+  vescor, gradior, morior, nascor, conor, arbitror, polliceor, mereor,
+  vereor, queror, miror`.
+  Their participles are particularly tricky:
+  - present participle (`loquens`) is regular active in form;
+  - perfect participle (`locutus, secutus`) has passive form but ACTIVE
+    meaning — render as "having V-ed", not "having been V-ed".
+  Pattern flags candidate verbs by lemma; the LLM verifies the form.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [hortor, loquor, sequor, utor, fungor, fruor, potior, vescor, gradior, morior, nascor, conor, arbitror, polliceor, mereor, vereor, queror, miror, proficiscor, ingredior, egredior, regredior, aggredior] }
+examples:
+  - lat: "Caesar hostes secutus est"
+    eng: "Caesar followed the enemies"
+    note: "`Secutus est` is passive in form, active in meaning."
+  - lat: "Loquor de Galliae populis"
+    eng: "I speak about the peoples of Gaul"
+    note: "Loquor — 1st person of deponent loqui."

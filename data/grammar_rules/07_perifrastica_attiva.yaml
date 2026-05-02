@@ -1,6 +1,7 @@
 phenomenon: perifrastica_attiva
 rule_type: syntactic
 source: "Allen & Greenough §195"
+translation_template: '"is about to V" / "is going to V" / "intends to V". Carries imminence/intention, not pure future. Distinguish from a substantivized future participle ("morituri" = "those about to die").'
 description: |
   Construction made up of the future active participle (suffix -urus,
   -ura, -urum) + a form of `esse`. It expresses intention, imminence,

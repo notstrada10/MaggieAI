@@ -1,0 +1,25 @@
+phenomenon: causale_quod
+rule_type: syntactic
+source: "Allen & Greenough §540"
+translation_template: 'Render as "because / since / inasmuch as [finite verb]". With indicative the speaker affirms the cause as fact; with subjunctive the cause is reported (alleged by another) — render as "on the grounds that / claiming that".'
+description: |
+  Causal clause introduced by `quod, quia, quoniam` (rarely `quando`).
+  Mood distinction is critical:
+  - Indicative — the speaker vouches for the cause as fact ("because…");
+  - Subjunctive — the cause is reported by someone else, not endorsed
+    by the speaker ("on the grounds that…").
+  WARNING: `quod` is also a relative pronoun (which/that) and can introduce
+  a noun clause; check the morpho table to see if it is SCONJ (causal) or
+  PRON / DET (relative).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [quia, quoniam] }
+    - { upos: SCONJ, lemma: quod }
+examples:
+  - lat: "Caesar laudatur quod Galliam vicit"
+    eng: "Caesar is praised because he conquered Gaul"
+    note: "Quod + indicative — speaker affirms the cause."
+  - lat: "Caesar laudatur quod Galliam vicerit"
+    eng: "Caesar is praised on the grounds that he conquered Gaul"
+    note: "Quod + subjunctive — cause attributed to others."

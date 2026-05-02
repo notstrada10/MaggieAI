@@ -1,0 +1,22 @@
+phenomenon: postquam_ubi_simul
+rule_type: syntactic
+source: "Allen & Greenough §543"
+translation_template: 'Render as "after / when / as soon as [past finite verb]". The Latin tense is typically perfect indicative — render as English simple past, NOT pluperfect. "Postquam Caesar venit" → "After Caesar arrived", not "After Caesar had arrived".'
+description: |
+  Time clauses with `postquam` ("after"), `ubi` ("when"), `ut` ("when /
+  as"), `simul / simul ac / simul atque` ("as soon as"). The verb is in
+  the indicative — typically the perfect (a single past event).
+  Note `ut` here is temporal/comparative; not the purpose / result `ut`
+  which takes the subjunctive.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [postquam, simul, simulatque, simulac] }
+    - { upos: SCONJ, lemma: ubi }
+examples:
+  - lat: "Postquam Caesar venit, hostes fugerunt"
+    eng: "After Caesar arrived, the enemies fled"
+    note: "Postquam + perfect indicative."
+  - lat: "Ubi pugnam vidit, statim fugit"
+    eng: "When he saw the battle, he immediately fled"
+    note: "Ubi temporal."

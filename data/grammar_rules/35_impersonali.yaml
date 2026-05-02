@@ -1,0 +1,30 @@
+phenomenon: impersonali
+rule_type: morphological
+source: "Allen & Greenough §207"
+translation_template: |
+  No grammatical subject — render with English "it" + verb: "licet" →
+  "it is permitted"; "oportet" → "it is fitting / one ought"; "paenitet
+  me" → "I regret / it makes me regret". `me / te / eum` in the accusative
+  is the person affected (= English subject of "regret / am ashamed").
+  `mihi / tibi / ei` in the dative is the person involved (= "I" in
+  "it is permitted to me").
+description: |
+  Impersonal verbs — used only in the 3rd person singular, no
+  morphological subject expressed. Two families:
+  1. Affecting + accusative of the person:
+     `paenitet, miseret, pudet, taedet, piget` ("I regret / pity /
+     am ashamed / am tired of / am annoyed by");
+  2. Allowing / requiring + dative (or accusative) of the person:
+     `licet, libet, oportet, decet, dedecet, placet, expedit, refert,
+     interest, fas est, nefas est`.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [licet, libet, oportet, decet, dedecet, paenitet, miseret, pudet, taedet, piget, placet, expedit, refert, interest] }
+examples:
+  - lat: "Mihi licet abire"
+    eng: "I am allowed to leave (it is permitted to me to leave)"
+    note: "Licet + dative + infinitive."
+  - lat: "Me paenitet huius rei"
+    eng: "I regret this thing"
+    note: "Paenitet + accusative of person + genitive of cause."

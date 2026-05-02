@@ -18,6 +18,8 @@ def _morpho_minimal() -> dict[str, object]:
                 "lemma": "Gallia",
                 "pos": "PROPN",
                 "features": {"Case": "Nom", "Number": "Sing"},
+                "head": 1,
+                "dep_rel": "nsubj",
             },
             {
                 "index": 1,
@@ -25,6 +27,8 @@ def _morpho_minimal() -> dict[str, object]:
                 "lemma": "sum",
                 "pos": "AUX",
                 "features": {"Mood": "Ind"},
+                "head": -1,
+                "dep_rel": "root",
             },
         ],
         "text": "Gallia est",

@@ -1,0 +1,21 @@
+phenomenon: antequam_priusquam
+rule_type: syntactic
+source: "Allen & Greenough §551"
+translation_template: 'Render as "before [finite verb]". With indicative = factual ("before X actually happened"). With subjunctive = anticipatory / preventive ("before X could happen / would happen"): "fugit antequam veniret" → "he fled before [he could] arrive".'
+description: |
+  `antequam, priusquam` ("before") split between two moods:
+  - Indicative — the action did occur, the order is purely temporal;
+  - Subjunctive — anticipation, prevention, or hypothesis ("before X
+    could V"). Common with negated main clauses and with verbs of
+    fleeing, preventing, dying.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [antequam, priusquam] }
+examples:
+  - lat: "Caesar venit antequam hostes pervenerunt"
+    eng: "Caesar arrived before the enemies got there"
+    note: "Antequam + perfect indicative — purely temporal."
+  - lat: "Hostes fugerunt priusquam Caesar perveniret"
+    eng: "The enemies fled before Caesar could arrive"
+    note: "Priusquam + imperfect subjunctive — anticipation."

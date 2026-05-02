@@ -1,0 +1,24 @@
+phenomenon: ottativo
+rule_type: syntactic
+source: "Allen & Greenough §441"
+translation_template: |
+  Render with English "would that / I wish that / if only". Tense in the
+  Latin subjunctive maps to time of the wish:
+  - Present subj. = wish for the future ("if only X may V");
+  - Imperfect subj. = wish unfulfilled in the present ("if only X were V-ing");
+  - Pluperfect subj. = wish unfulfilled in the past ("if only X had V-ed").
+description: |
+  Optative subjunctive — independent (main-clause) subjunctive expressing
+  a wish, often introduced by `utinam` or (less often) by `o si`,
+  `velim / nolim`. Negative: `ne` (or `utinam ne`).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma: utinam }
+examples:
+  - lat: "Utinam Caesar veniat"
+    eng: "If only Caesar would come"
+    note: "Present subjunctive — future wish."
+  - lat: "Utinam ne profectus esset"
+    eng: "If only he had not set out"
+    note: "Pluperfect subjunctive — unfulfilled past wish."

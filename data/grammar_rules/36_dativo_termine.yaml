@@ -1,0 +1,24 @@
+phenomenon: dativo_termine
+rule_type: morphological
+source: "Allen & Greenough §362"
+translation_template: 'Render as "to / for [noun]": "Caesar militibus pecuniam dat" → "Caesar gives money TO the soldiers". With ditransitive verbs (do, narro, mitto, scribo, ostendo) the dative is the recipient; the accusative is the thing given. Distinct from dativo_possesso (with esse) and dativo_agente (with passive periphrastic).'
+description: |
+  Dative of indirect object — the standard "to / for whom" usage with
+  ditransitive verbs of giving, telling, showing, sending, promising:
+  `do, dono, narro, dico, mitto, scribo, ostendo, nuntio, polliceor,
+  reddo, trado`.
+  Pattern matches all dative tokens; description / template handle the
+  disambiguation against the other dative rules (possesso, agente,
+  fine, compagnia con verbi).
+pattern:
+  type: ud_pattern
+  match_any:
+    - { upos: NOUN, Case: Dat }
+    - { upos: PRON, Case: Dat }
+examples:
+  - lat: "Caesar militibus pecuniam dat"
+    eng: "Caesar gives money to the soldiers"
+    note: "`militibus` = recipient (dative), `pecuniam` = thing given (accusative)."
+  - lat: "Liber mihi datus est"
+    eng: "The book was given to me"
+    note: "`mihi` = recipient with passive verb."

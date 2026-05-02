@@ -1,6 +1,7 @@
 phenomenon: accusativo_con_infinito
 rule_type: syntactic
 source: "Allen & Greenough §580"
+translation_template: '"[main-verb] that [accusative-noun = subject] [infinitive → finite verb]". Tense of the infinitive maps to: present infinitive = same time as main verb; perfect = before; future = after. For sense verbs (audio, video, sentio) the accusative-and-infinitive may be preserved: "I heard him come".'
 description: |
   Construction (ACI) used in Latin as the object of verbs of saying,
   thinking, perceiving, and feeling (verba dicendi, sentiendi, voluntatis).

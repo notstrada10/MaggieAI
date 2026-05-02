@@ -1,0 +1,34 @@
+phenomenon: periodo_ipotetico
+rule_type: syntactic
+source: "Allen & Greenough §513-§517"
+translation_template: |
+  Three branches keyed to mood + tense in the protasis (the `si` clause):
+  1. REAL — `si` + indicative (any tense) → English "if [indicative]":
+     "Si pluit, manebimus" → "If it is raining, we will stay".
+  2. POTENTIAL / future-less-vivid — `si` + present subjunctive →
+     "if [should V]" / "were to V": "Si pluat, maneamus" →
+     "If it should rain, we would stay".
+  3. CONTRARY-TO-FACT — `si` + imperfect subj. (present time) or
+     pluperfect subj. (past time) → "if [were V-ing] / [had V-ed]":
+     "Si pluerent, manerent" → "If it were raining, they would stay";
+     "Si pluisset, mansissent" → "If it had rained, they would have
+     stayed". Apodosis mirrors with would / would have.
+description: |
+  Conditional sentence — a `si / nisi / sin` protasis paired with a main-
+  clause apodosis. Three branches, each with a fixed mood/tense pattern.
+  See translation_template for the matrix.
+  - `nisi` = "if not / unless" — same branches as `si`.
+  - `sin` = "but if" — pivots between two conditions.
+  Mixed conditionals do occur (real protasis + irreal apodosis, etc.) —
+  trust the morpho table per clause rather than forcing a single branch.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [si, nisi, sin] }
+examples:
+  - lat: "Si pluit, in tabernaculo manebimus"
+    eng: "If it is raining, we will stay in the tent"
+    note: "REAL: si + indicative."
+  - lat: "Si Caesar venisset, hostes vicisset"
+    eng: "If Caesar had come, he would have defeated the enemy"
+    note: "CONTRARY-TO-FACT past: pluperfect subj. in both clauses."

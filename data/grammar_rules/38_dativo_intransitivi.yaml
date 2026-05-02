@@ -1,0 +1,25 @@
+phenomenon: dativo_intransitivi
+rule_type: morphological
+source: "Allen & Greenough §367, §370"
+translation_template: 'Latin verb governs a dative; English uses a direct object: "Caesar militibus parcit" → "Caesar spares the soldiers" (NOT "spares to the soldiers"). With compound verbs the prefix often suggests the preposition: "praeficio" + dative → "put in charge OF"; "occurro" + dative → "meet / run INTO".'
+description: |
+  Verbs that govern the dative in Latin where English uses a direct
+  object. Two groups:
+  1. Special intransitives — verbs of helping / pleasing / commanding /
+     trusting / sparing / forgiving: `noceo, parco, faveo, studeo,
+     pareo, suadeo, persuadeo, ignosco, indulgeo, invideo, irascor,
+     placeo, displiceo, prosum, obsum`.
+  2. Compound verbs with prefixes `ad-, ante-, con-, de-, in-, inter-,
+     ob-, post-, prae-, sub-, super-`: `occurro, succurro, praeficio,
+     antecedo, intersum, praesum, succedo, occurro`.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [noceo, parco, faveo, studeo, pareo, suadeo, persuadeo, ignosco, indulgeo, invideo, irascor, placeo, displiceo, prosum, obsum, occurro, succurro, praeficio, antecedo, intersum, praesum] }
+examples:
+  - lat: "Caesar militibus parcit"
+    eng: "Caesar spares the soldiers"
+    note: "Parco + dative — English direct object."
+  - lat: "Bello praefuit"
+    eng: "He was in charge of the war"
+    note: "Compound verb praesum + dative."

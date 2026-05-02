@@ -1,0 +1,21 @@
+phenomenon: ablativo_separazione
+rule_type: morphological
+source: "Allen & Greenough §400"
+translation_template: 'Render as "from [noun]" / "of [noun]": "liberare hostibus" → "to free from the enemies"; "carere pecunia" → "to be without money / lack money". With persons or places `ab / ex / de` is preferred; with abstract things the bare ablative is common.'
+description: |
+  Ablative of separation — used with verbs and adjectives expressing
+  separation, deprivation, or freedom from: `libero, careo, exuo,
+  prohibeo, abdico, expello, pello, vacuus, liber, immunis, alienus,
+  privus`. With persons / places usually `a / ab / ex / de` + ablative;
+  with abstract things bare ablative.
+pattern:
+  type: ud_pattern
+  match_any:
+    - { lemma_in: [libero, careo, exuo, abdico, expello, vacuus, immunis] }
+examples:
+  - lat: "Caesar Galliam servitute liberavit"
+    eng: "Caesar freed Gaul from slavery"
+    note: "Bare ablative `servitute` with libero."
+  - lat: "Pecunia caret"
+    eng: "He lacks money"
+    note: "Bare ablative `pecunia` with careo."
