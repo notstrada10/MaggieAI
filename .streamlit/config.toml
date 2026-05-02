@@ -1,0 +1,17 @@
+# Scholarly palette — parchment + ink + oxblood. Deliberately avoiding
+# the generic-AI-app look (purple gradients, neon teal, default Streamlit
+# coral). System serif stack only — no Google Fonts pull.
+
+[theme]
+base = "light"
+backgroundColor = "#EFE7D3"
+secondaryBackgroundColor = "#E6DCC2"
+primaryColor = "#7A1F1F"
+textColor = "#1B1812"
+font = "serif"
+
+[server]
+runOnSave = true
+
+[browser]
+gatherUsageStats = false

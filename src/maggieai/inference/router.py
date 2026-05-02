@@ -74,6 +74,18 @@ class InferenceRouter:
         logger.debug("Inference: task=%s client=%s", task.value, client.name)
         return await client.generate(request)
 
+    def with_mode(self, mode: RoutingMode) -> InferenceRouter:
+        # Sibling router that shares the same lazily-cached clients — so
+        # switching modes per-request does not re-instantiate MLX/Claude/DeepSeek.
+        # The shared router that owns aclose() remains `self`.
+        sibling = InferenceRouter(
+            mode=mode,
+            local=self._local,
+            claude=self._claude,
+            deepseek=self._deepseek,
+        )
+        return sibling
+
     async def aclose(self) -> None:
         for c in (self._local, self._claude, self._deepseek):
             if c is not None:

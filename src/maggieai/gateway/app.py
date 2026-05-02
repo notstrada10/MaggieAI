@@ -21,6 +21,7 @@ from uuid import UUID, uuid4
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy import update as sql_update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from maggieai.agent.graph import build_graph
@@ -37,8 +38,23 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------
 # Pydantic — request/response
 # -------------------------------------------------------------------
+_VALID_MODES: tuple[str, ...] = ("hybrid", "local-only", "claude-only", "deepseek-only")
+
+
 class TranslateRequest(BaseModel):
     text: str = Field(min_length=1, description="Latin sentence to translate")
+    routing_mode: str | None = Field(
+        default=None,
+        description=(
+            "Optional per-request override of the inference routing mode. "
+            "One of: 'hybrid', 'local-only', 'claude-only', 'deepseek-only'. "
+            "When unset, the gateway uses its lifespan-time mode."
+        ),
+    )
+
+
+class RatingRequest(BaseModel):
+    rating: int = Field(ge=1, le=5, description="User rating 1..5")
 
 
 class TranslateResponse(BaseModel):
@@ -105,8 +121,21 @@ def health() -> dict[str, str]:
 async def translate(req: TranslateRequest) -> TranslateResponse:
     trace_id: UUID = uuid4()
     initial_state: dict[str, Any] = {"input_text": req.text, "trace_id": trace_id, "iterations": 0}
+
+    # Pick the graph: cached default, or a sibling-router graph when the
+    # client asked for a different mode. Sibling shares cached clients.
+    graph = app.state.graph
+    if req.routing_mode and req.routing_mode != app.state.router.mode:
+        if req.routing_mode not in _VALID_MODES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid routing_mode '{req.routing_mode}'. Expected one of {_VALID_MODES}.",
+            )
+        sibling = app.state.router.with_mode(req.routing_mode)
+        graph = build_graph(router=sibling)
+
     try:
-        final_state = await app.state.graph.ainvoke(initial_state)
+        final_state = await graph.ainvoke(initial_state)
     except Exception as exc:  # pragma: no cover — log + 500
         logger.exception("Error in reasoning loop (trace=%s)", trace_id)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
@@ -117,6 +146,22 @@ async def translate(req: TranslateRequest) -> TranslateResponse:
 
     _persist_trace(trace_id, req.text, final_state)
     return TranslateResponse(**output)
+
+
+@app.patch("/traces/{trace_id}/rating")
+def rate_trace(trace_id: UUID, req: RatingRequest) -> dict[str, Any]:
+    """Set the user_rating for an existing trace. Returns the new value."""
+    with session_scope() as session:
+        result = session.execute(
+            sql_update(ReasoningTrace)
+            .where(ReasoningTrace.trace_id == trace_id)
+            .values(user_rating=req.rating)
+            .returning(ReasoningTrace.trace_id, ReasoningTrace.user_rating)
+        )
+        row = result.first()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Trace {trace_id} not found")
+    return {"trace_id": str(row.trace_id), "user_rating": int(row.user_rating)}
 
 
 @app.post("/retrieve", response_model=RetrieveResponse)

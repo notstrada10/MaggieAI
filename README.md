@@ -129,9 +129,9 @@ and graph routing). No DB, no LLM: runs anywhere.
 ## Operational notes
 
 - **Local inference does not start? You have an Intel Mac?** MLX
-  requires Apple Silicon. Workaround: set
-  `INFERENCE_ROUTING_MODE=claude-only` in `.env` (TODO, see
-  `inference/router.py`).
+  requires Apple Silicon. Set `INFERENCE_ROUTING_MODE=claude-only` (or
+  `deepseek-only`) in `.env`, or pick the mode per-request in the
+  Workbench sidebar.
 - **CLTK takes 1–2 min on the first `/analyze`**: it downloads the
   Stanza models for Latin into the `cltk_data` volume — subsequent
   starts are instant.
@@ -152,11 +152,31 @@ See blueprint for details. Summary:
 
 | Sprint | What | Status |
 |---|---|---|
-| 1 | Infra + 500-pair ingestion + 12 rules | 🚧 in progress (English-aligned corpus still missing) |
-| 2 | RAG vanilla `/retrieve` | ✅ skeleton ready, TM to be populated |
-| 3 | Agent loop `/translate` | ✅ skeleton ready, end-to-end smoke pending |
-| 4 | Self-critique + eval harness + Streamlit UI | 🟡 partial (UI missing) |
+| 1 | Infra + 500-pair ingestion + 12 rules | ✅ done (647 Caesar pairs loaded — DBG 404 + DBC 243; 12 rules in DB) |
+| 2 | RAG vanilla `/retrieve` | ✅ done (pgvector HNSW + trigram source index live) |
+| 3 | Agent loop `/translate` | ✅ done (end-to-end traces in `reasoning_traces`) |
+| 4 | Self-critique + eval harness + Streamlit UI | 🟡 partial — UI shipped, eval harness has Qwen-14B-local full numbers (BLEU 7.76 / chrF 28.96 on RespondeoQA 174); full Claude run still pending |
 
-Current unit-test coverage: 37 tests passing across 7 modules
-(aligner, perseus, phenomena, prompts, grammar_loader, node helpers,
-claude `_split_system`).
+Current unit-test coverage: 69 tests passing.
+
+## Workbench (Streamlit)
+
+```bash
+# Gateway must be reachable (default: localhost:18000)
+GATEWAY_URL=http://localhost:18000 \
+  uv run streamlit run src/maggieai/ui/app.py
+```
+
+Features:
+- **Routing selector** in the sidebar — switch between Hybrid / Claude
+  only / Local only / DeepSeek only without touching `.env`. The choice
+  is sent as `routing_mode` on each `POST /translate`.
+- **Token-click → morphology highlight**: click any word in the
+  rendered source line to highlight its row in the Morphology tab.
+- **TM citations show the matched Latin and English snippets**
+  alongside the locator and cosine distance.
+- **Rating** (I–V) under each translation; written to
+  `reasoning_traces.user_rating` via `PATCH /traces/{id}/rating`. Ratings
+  are visible next to each entry in the Recent traces list.
+- **Compare mode** — side-by-side two historical traces for spotting
+  regressions when changing prompts or models.

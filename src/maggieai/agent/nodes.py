@@ -135,6 +135,11 @@ def format_output(state: AgentState) -> dict[str, Any]:
             {
                 "type": "translation_memory",
                 "source": f"{tm_hit['author'] or '?'} {tm_hit['work'] or ''} {tm_hit['locator'] or ''}".strip(),
+                "source_text": tm_hit["source_text"],
+                "target_text": tm_hit["target_text"],
+                "author": tm_hit["author"],
+                "work": tm_hit["work"],
+                "locator": tm_hit["locator"],
                 "translator": tm_hit["translator"],
                 "distance": tm_hit["distance"],
             }
