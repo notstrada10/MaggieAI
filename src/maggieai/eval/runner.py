@@ -17,6 +17,8 @@ import httpx
 from rich.console import Console
 from rich.table import Table
 
+from maggieai.eval.coverage import coverage as _coverage_cmd
+
 console = Console()
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,9 @@ RESPONDEO_TRANSLATION_URL = (
 @click.group()
 def cli() -> None:
     """MaggieAI eval CLI."""
+
+
+cli.add_command(_coverage_cmd)
 
 
 def _extract_latin(question_text: str) -> str | None:
