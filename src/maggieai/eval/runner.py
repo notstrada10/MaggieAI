@@ -113,7 +113,13 @@ def prepare_respondeo(output: Path) -> None:
 @click.option("--gold", type=click.Path(exists=True, dir_okay=False, path_type=Path), required=True)
 @click.option("--gateway-url", default="http://localhost:18000")
 @click.option("--limit", type=int, default=None, help="Truncate to the first N records")
-def run(gold: Path, gateway_url: str, limit: int | None) -> None:
+@click.option(
+    "--routing-mode",
+    type=click.Choice(["hybrid", "claude-only", "local-only", "deepseek-only"]),
+    default=None,
+    help="Override gateway routing for this run (sent as routing_mode in /translate body).",
+)
+def run(gold: Path, gateway_url: str, limit: int | None, routing_mode: str | None) -> None:
     """Run the gold set and print BLEU + chrF."""
     try:
         from sacrebleu import corpus_bleu, corpus_chrf
@@ -129,11 +135,16 @@ def run(gold: Path, gateway_url: str, limit: int | None) -> None:
         records = records[:limit]
 
     console.print(f"[bold]Eval over {len(records)} examples[/bold]")
+    if routing_mode:
+        console.print(f"[dim]routing_mode={routing_mode}[/dim]")
     hyp: list[str] = []
     ref: list[str] = []
 
     async def _run_one(client: httpx.AsyncClient, text: str) -> str:
-        r = await client.post(f"{gateway_url}/translate", json={"text": text}, timeout=600.0)
+        payload: dict[str, object] = {"text": text}
+        if routing_mode:
+            payload["routing_mode"] = routing_mode
+        r = await client.post(f"{gateway_url}/translate", json=payload, timeout=600.0)
         r.raise_for_status()
         return str(r.json()["translation"])
 

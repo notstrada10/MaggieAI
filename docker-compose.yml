@@ -41,7 +41,7 @@ services:
     ports:
       - "8002:8002"
     volumes:
-      - cltk_data:/cltk_data
+      - ./.cache/cltk:/cltk_data
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
       interval: 10s
@@ -64,7 +64,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - hf_cache:/root/.cache/huggingface
+      - ~/.cache/huggingface:/root/.cache/huggingface
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,7 +88,7 @@ services:
       POSTGRES_HOST: postgres
     volumes:
       - ./data:/app/data:ro
-      - hf_cache:/root/.cache/huggingface
+      - ~/.cache/huggingface:/root/.cache/huggingface
     depends_on:
       postgres:
         condition: service_healthy
@@ -97,5 +97,3 @@ services:
 
 volumes:
   pg_data:
-  cltk_data:
-  hf_cache:

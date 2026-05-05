@@ -35,8 +35,11 @@ data/models/
 # Eval reports
 eval/reports/
 
-# Inference model cache (mlx-lm pulls from HF)
-.cache/huggingface/
+# Bind-mounted caches (mlx-lm + bge-m3 + CLTK/Stanza models)
+.cache/
+
+# Claude Code session artifacts
+.claude/scheduled_tasks.lock
 
 # Local docker volumes
 docker/volumes/
