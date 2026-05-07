@@ -18,6 +18,7 @@ def get_engine() -> Engine:
     return create_engine(settings.postgres_dsn, pool_pre_ping=True, future=True)
 
 
+# Comment
 @lru_cache(maxsize=1)
 def _session_factory() -> sessionmaker[Session]:
     return sessionmaker(bind=get_engine(), expire_on_commit=False, future=True)
