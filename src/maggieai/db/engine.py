@@ -24,6 +24,7 @@ def _session_factory() -> sessionmaker[Session]:
     return sessionmaker(bind=get_engine(), expire_on_commit=False, future=True)
 
 
+## great example of async using yield
 @contextmanager
 def session_scope() -> Iterator[Session]:
     """Session with automatic commit/rollback."""
