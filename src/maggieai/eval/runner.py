@@ -125,12 +125,21 @@ def prepare_respondeo(output: Path) -> None:
     default=None,
     help="Write per-item results (input, reference, hypothesis, error) to this JSONL.",
 )
+@click.option(
+    "--concurrency",
+    type=click.IntRange(min=1),
+    default=1,
+    show_default=True,
+    help="Max concurrent /translate requests. Default 1 (sequential) to be polite "
+    "to rate-limited APIs; bump to 4-8 for fast cloud routes.",
+)
 def run(
     gold: Path,
     gateway_url: str,
     limit: int | None,
     routing_mode: str | None,
     output: Path | None,
+    concurrency: int,
 ) -> None:
     """Run the gold set and print BLEU + chrF."""
     try:
@@ -146,12 +155,14 @@ def run(
     if limit:
         records = records[:limit]
 
-    console.print(f"[bold]Eval over {len(records)} examples[/bold]")
+    console.print(f"[bold]Eval over {len(records)} examples[/bold] (concurrency={concurrency})")
     if routing_mode:
         console.print(f"[dim]routing_mode={routing_mode}[/dim]")
-    hyp: list[str] = []
-    ref: list[str] = []
-    per_item: list[dict[str, object]] = []
+
+    # Pre-size result lists so workers can write into them by index
+    # without holding a lock — preserves gold-file order in the output.
+    per_item: list[dict[str, object]] = [{} for _ in records]
+    completed = {"n": 0}
 
     async def _run_one(client: httpx.AsyncClient, text: str) -> str:
         payload: dict[str, object] = {"text": text}
@@ -161,31 +172,43 @@ def run(
         r.raise_for_status()
         return str(r.json()["translation"])
 
+    async def _worker(
+        sem: asyncio.Semaphore,
+        client: httpx.AsyncClient,
+        idx: int,
+        rec: dict[str, object],
+    ) -> None:
+        async with sem:
+            err: str | None = None
+            try:
+                out = await _run_one(client, str(rec["input"]))
+            except Exception as exc:
+                logger.warning("Error on input '%s': %s", str(rec["input"])[:50], exc)
+                out = ""
+                err = f"{type(exc).__name__}: {exc}"
+            per_item[idx] = {
+                "input": rec["input"],
+                "reference": rec["translation"],
+                "hypothesis": out,
+                "error": err,
+                "question_id": rec.get("question_id"),
+            }
+            completed["n"] += 1
+            console.print(
+                f"  [{completed['n']}/{len(records)}] (#{idx}) {str(rec['input'])[:60]}..."
+            )
+
     async def _drive() -> None:
+        sem = asyncio.Semaphore(concurrency)
         async with httpx.AsyncClient() as client:
-            for rec in records:
-                err: str | None = None
-                try:
-                    out = await _run_one(client, rec["input"])
-                except Exception as exc:
-                    logger.warning("Error on input '%s': %s", rec["input"][:50], exc)
-                    out = ""
-                    err = f"{type(exc).__name__}: {exc}"
-                hyp.append(out)
-                ref.append(rec["translation"])
-                per_item.append(
-                    {
-                        "input": rec["input"],
-                        "reference": rec["translation"],
-                        "hypothesis": out,
-                        "error": err,
-                        "question_id": rec.get("question_id"),
-                    }
-                )
-                console.print(f"  [{len(hyp)}/{len(records)}] {rec['input'][:60]}...")
+            await asyncio.gather(
+                *(_worker(sem, client, i, rec) for i, rec in enumerate(records))
+            )
 
     asyncio.run(_drive())
 
+    hyp = [str(it["hypothesis"]) for it in per_item]
+    ref = [str(it["reference"]) for it in per_item]
     bleu = corpus_bleu(hyp, [ref])
     chrf = corpus_chrf(hyp, [ref])
 
