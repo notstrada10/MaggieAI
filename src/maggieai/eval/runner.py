@@ -207,5 +207,135 @@ def run(
         console.print(f"[green]Wrote[/green] {len(per_item)} per-item rows → {output}")
 
 
+def _load_run(path: Path) -> list[dict[str, object]]:
+    """Read a JSONL produced by ``maggie-eval run --output``."""
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def _align_runs(
+    a: list[dict[str, object]], b: list[dict[str, object]]
+) -> tuple[list[tuple[dict[str, object], dict[str, object]]], list[str]]:
+    """Pair items by question_id (falling back to input).
+
+    Returns (aligned_pairs, warnings). Items present in only one side
+    produce a warning string but are dropped from the aligned list — a
+    fair comparison needs both hypotheses.
+    """
+
+    def _key(item: dict[str, object]) -> str:
+        qid = item.get("question_id")
+        return str(qid) if qid else str(item.get("input", ""))
+
+    by_key_a = {_key(it): it for it in a}
+    by_key_b = {_key(it): it for it in b}
+    common = sorted(set(by_key_a) & set(by_key_b))
+    only_a = sorted(set(by_key_a) - set(by_key_b))
+    only_b = sorted(set(by_key_b) - set(by_key_a))
+
+    warnings: list[str] = []
+    if only_a:
+        warnings.append(f"{len(only_a)} item(s) only in A (dropped)")
+    if only_b:
+        warnings.append(f"{len(only_b)} item(s) only in B (dropped)")
+    return [(by_key_a[k], by_key_b[k]) for k in common], warnings
+
+
+def _sentence_bleu(hyp: str, ref: str) -> float:
+    """Sentence-level BLEU. Returns 0.0 for empty hypothesis (the error case)."""
+    if not hyp:
+        return 0.0
+    from sacrebleu import sentence_bleu
+
+    return float(sentence_bleu(hyp, [ref]).score)
+
+
+@cli.command("compare")
+@click.argument("a", type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.argument("b", type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.option("--top", type=int, default=5, show_default=True, help="Top-N wins/losses to print.")
+def compare(a: Path, b: Path, top: int) -> None:
+    """Diff two JSONL run outputs from `maggie-eval run --output`.
+
+    Shows corpus BLEU/chrF + error counts for each side, the items where
+    A and B disagree most by sentence-BLEU delta, and the error-set diff.
+    """
+    try:
+        from sacrebleu import corpus_bleu, corpus_chrf
+    except ImportError as exc:  # pragma: no cover
+        raise click.ClickException(
+            "sacrebleu is not installed. Install with: uv pip install -e '.[eval]'"
+        ) from exc
+
+    run_a = _load_run(a)
+    run_b = _load_run(b)
+    aligned, align_warnings = _align_runs(run_a, run_b)
+    for w in align_warnings:
+        console.print(f"[yellow]Warning:[/yellow] {w}")
+
+    if not aligned:
+        raise click.ClickException("No items align between A and B (check question_id/input keys).")
+
+    hyp_a = [str(p[0].get("hypothesis", "")) for p in aligned]
+    hyp_b = [str(p[1].get("hypothesis", "")) for p in aligned]
+    refs = [str(p[0].get("reference", "")) for p in aligned]
+    err_a = sum(1 for p in aligned if p[0].get("error"))
+    err_b = sum(1 for p in aligned if p[1].get("error"))
+
+    summary = Table(title=f"Compare: {a.name} vs {b.name} ({len(aligned)} aligned items)")
+    summary.add_column("Metric")
+    summary.add_column("A", justify="right")
+    summary.add_column("B", justify="right")
+    summary.add_column("Δ (B-A)", justify="right")
+
+    bleu_a = corpus_bleu(hyp_a, [refs]).score
+    bleu_b = corpus_bleu(hyp_b, [refs]).score
+    chrf_a = corpus_chrf(hyp_a, [refs]).score
+    chrf_b = corpus_chrf(hyp_b, [refs]).score
+    summary.add_row("BLEU", f"{bleu_a:.2f}", f"{bleu_b:.2f}", f"{bleu_b - bleu_a:+.2f}")
+    summary.add_row("chrF", f"{chrf_a:.2f}", f"{chrf_b:.2f}", f"{chrf_b - chrf_a:+.2f}")
+    summary.add_row("Errors", f"{err_a}", f"{err_b}", f"{err_b - err_a:+d}")
+    console.print(summary)
+
+    # Per-item deltas for the top-K disagreements
+    deltas: list[tuple[float, dict[str, object], dict[str, object]]] = []
+    for item_a, item_b in aligned:
+        ref = str(item_a.get("reference", ""))
+        ha = str(item_a.get("hypothesis", ""))
+        hb = str(item_b.get("hypothesis", ""))
+        delta = _sentence_bleu(hb, ref) - _sentence_bleu(ha, ref)
+        deltas.append((delta, item_a, item_b))
+
+    def _print_top(title: str, sorted_deltas: list[tuple[float, dict[str, object], dict[str, object]]]) -> None:
+        t = Table(title=title)
+        t.add_column("Δ", justify="right")
+        t.add_column("Input")
+        t.add_column("A")
+        t.add_column("B")
+        for delta, item_a, item_b in sorted_deltas[:top]:
+            t.add_row(
+                f"{delta:+.1f}",
+                str(item_a.get("input", ""))[:60],
+                str(item_a.get("hypothesis", ""))[:60] or "[red]<error>[/red]",
+                str(item_b.get("hypothesis", ""))[:60] or "[red]<error>[/red]",
+            )
+        console.print(t)
+
+    _print_top("Biggest B wins", sorted(deltas, key=lambda d: -d[0]))
+    _print_top("Biggest A wins", sorted(deltas, key=lambda d: d[0]))
+
+    # Error-set diff
+    errs_only_in_a = [p for p in aligned if p[0].get("error") and not p[1].get("error")]
+    errs_only_in_b = [p for p in aligned if p[1].get("error") and not p[0].get("error")]
+    if errs_only_in_a or errs_only_in_b:
+        console.print(
+            f"[dim]Errors only in A: {len(errs_only_in_a)}; "
+            f"only in B: {len(errs_only_in_b)}[/dim]"
+        )
+
+
 if __name__ == "__main__":
     cli()
