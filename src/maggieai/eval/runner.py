@@ -47,7 +47,7 @@ def _extract_latin(question_text: str) -> str | None:
     if italics:
         return italics.group(1).strip() or None
     stripped = re.sub(
-        r"^(Derive and translate|Translate)[\s—–\-:]+",
+        r"^(Derive and translate|Translate)[\s—–\-:]+",  # noqa: RUF001 - en/em dashes appear verbatim in RespondeoQA prompts
         "",
         question_text.strip(),
         flags=re.IGNORECASE,
@@ -119,7 +119,19 @@ def prepare_respondeo(output: Path) -> None:
     default=None,
     help="Override gateway routing for this run (sent as routing_mode in /translate body).",
 )
-def run(gold: Path, gateway_url: str, limit: int | None, routing_mode: str | None) -> None:
+@click.option(
+    "--output",
+    type=click.Path(dir_okay=False, path_type=Path),
+    default=None,
+    help="Write per-item results (input, reference, hypothesis, error) to this JSONL.",
+)
+def run(
+    gold: Path,
+    gateway_url: str,
+    limit: int | None,
+    routing_mode: str | None,
+    output: Path | None,
+) -> None:
     """Run the gold set and print BLEU + chrF."""
     try:
         from sacrebleu import corpus_bleu, corpus_chrf
@@ -139,6 +151,7 @@ def run(gold: Path, gateway_url: str, limit: int | None, routing_mode: str | Non
         console.print(f"[dim]routing_mode={routing_mode}[/dim]")
     hyp: list[str] = []
     ref: list[str] = []
+    per_item: list[dict[str, object]] = []
 
     async def _run_one(client: httpx.AsyncClient, text: str) -> str:
         payload: dict[str, object] = {"text": text}
@@ -151,13 +164,24 @@ def run(gold: Path, gateway_url: str, limit: int | None, routing_mode: str | Non
     async def _drive() -> None:
         async with httpx.AsyncClient() as client:
             for rec in records:
+                err: str | None = None
                 try:
                     out = await _run_one(client, rec["input"])
                 except Exception as exc:
                     logger.warning("Error on input '%s': %s", rec["input"][:50], exc)
                     out = ""
+                    err = f"{type(exc).__name__}: {exc}"
                 hyp.append(out)
                 ref.append(rec["translation"])
+                per_item.append(
+                    {
+                        "input": rec["input"],
+                        "reference": rec["translation"],
+                        "hypothesis": out,
+                        "error": err,
+                        "question_id": rec.get("question_id"),
+                    }
+                )
                 console.print(f"  [{len(hyp)}/{len(records)}] {rec['input'][:60]}...")
 
     asyncio.run(_drive())
@@ -170,7 +194,17 @@ def run(gold: Path, gateway_url: str, limit: int | None, routing_mode: str | Non
     table.add_column("Value", justify="right")
     table.add_row("BLEU", f"{bleu.score:.2f}")
     table.add_row("chrF", f"{chrf.score:.2f}")
+    n_errors = sum(1 for it in per_item if it["error"])
+    if n_errors:
+        table.add_row("Errors", f"{n_errors}/{len(records)}")
     console.print(table)
+
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with output.open("w", encoding="utf-8") as fh:
+            for item in per_item:
+                fh.write(json.dumps(item, ensure_ascii=False) + "\n")
+        console.print(f"[green]Wrote[/green] {len(per_item)} per-item rows → {output}")
 
 
 if __name__ == "__main__":
