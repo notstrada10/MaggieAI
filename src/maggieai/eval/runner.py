@@ -133,6 +133,13 @@ def prepare_respondeo(output: Path) -> None:
     help="Max concurrent /translate requests. Default 1 (sequential) to be polite "
     "to rate-limited APIs; bump to 4-8 for fast cloud routes.",
 )
+@click.option(
+    "--resume-from",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="Prior --output JSONL: reuse successful hypotheses, only re-run items "
+    "that errored or have an empty hypothesis.",
+)
 def run(
     gold: Path,
     gateway_url: str,
@@ -140,6 +147,7 @@ def run(
     routing_mode: str | None,
     output: Path | None,
     concurrency: int,
+    resume_from: Path | None,
 ) -> None:
     """Run the gold set and print BLEU + chrF."""
     try:
@@ -163,6 +171,34 @@ def run(
     # without holding a lock — preserves gold-file order in the output.
     per_item: list[dict[str, object]] = [{} for _ in records]
     completed = {"n": 0}
+
+    # Resume: pre-populate per_item with prior successful results, schedule only
+    # the rest. The "needs rerun" predicate matches the error case for empty
+    # hypotheses too, which catches degenerate hyp="" rows that bypassed `error`.
+    indices_to_run: list[int] = list(range(len(records)))
+    reused = 0
+    if resume_from is not None:
+        prior_by_key = _index_run_by_key(_load_run(resume_from))
+        indices_to_run = []
+        for i, rec in enumerate(records):
+            key = _record_key(rec)
+            prior = prior_by_key.get(key)
+            if prior is not None and not _needs_rerun(prior):
+                per_item[i] = {
+                    "input": rec["input"],
+                    "reference": rec["translation"],
+                    "hypothesis": prior.get("hypothesis", ""),
+                    "error": None,
+                    "question_id": rec.get("question_id"),
+                }
+                reused += 1
+            else:
+                indices_to_run.append(i)
+        console.print(
+            f"[dim]resume: reused {reused}/{len(records)} from {resume_from.name}; "
+            f"running {len(indices_to_run)}[/dim]"
+        )
+        completed["n"] = reused
 
     async def _run_one(client: httpx.AsyncClient, text: str) -> str:
         payload: dict[str, object] = {"text": text}
@@ -202,7 +238,7 @@ def run(
         sem = asyncio.Semaphore(concurrency)
         async with httpx.AsyncClient() as client:
             await asyncio.gather(
-                *(_worker(sem, client, i, rec) for i, rec in enumerate(records))
+                *(_worker(sem, client, i, records[i]) for i in indices_to_run)
             )
 
     asyncio.run(_drive())
@@ -237,6 +273,27 @@ def _load_run(path: Path) -> list[dict[str, object]]:
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+
+
+def _record_key(rec: dict[str, object]) -> str:
+    """Key a gold record or a prior-run row for matching across files."""
+    qid = rec.get("question_id")
+    return str(qid) if qid else str(rec.get("input", ""))
+
+
+def _index_run_by_key(items: list[dict[str, object]]) -> dict[str, dict[str, object]]:
+    """Index a prior-run JSONL by question_id (with input as fallback)."""
+    return {_record_key(it): it for it in items}
+
+
+def _needs_rerun(prior: dict[str, object]) -> bool:
+    """A prior-run row is "good enough to reuse" iff it has a non-empty
+    hypothesis and no error. Anything else gets re-run.
+    """
+    if prior.get("error"):
+        return True
+    hyp = prior.get("hypothesis")
+    return not (isinstance(hyp, str) and hyp.strip())
 
 
 def _align_runs(
